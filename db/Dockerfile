@@ -21,8 +21,7 @@ RUN	mkdir -p $TC_DIR/sql && \
 	7z x *.7z
 
 ADD	build.sh /etc/db/build.sh
-RUN	mysqld_safe && \
-	/etc/db/build.sh && \
-	rm -rf $TC_DIR
+RUN	/etc/db/build.sh
+RUN	rm -rf $TC_DIR
 
 ENV	DEBIAN_FRONTEND newt
