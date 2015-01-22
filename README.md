@@ -30,19 +30,43 @@ TODO: figure out DB stuff
 Grab [worldserver.conf.dist][], copy it to your `ServerData` folder, and rename it to `worldserver.conf`. Make any modifications needed, such as database credentials (hopefully this isn't necessary eventually), and then run something like:
 
 ```sh
-docker run -ti -v -v ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /usr/local/bin/worldserver -c /opt/trinitycore-data/worldserver.conf
+docker run -ti -v --name worldserver ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /usr/local/bin/worldserver -c /opt/trinitycore-data/worldserver.conf
 ```
 
-### Running the worldserver
+### Running the authserver
 
 TODO: figure out DB stuff
 
 Grab [authserver.conf.dist][], copy it to your `ServerData` folder, and rename it to `authserver.conf`. Make any modifications needed, such as database credentials (hopefully this isn't necessary eventually), and then run something like:
 
 ```sh
-docker run -ti -v -v ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /usr/local/bin/authserver -c /opt/trinitycore-data/authserver.conf
+docker run -ti -v --name authserver ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /usr/local/bin/authserver -c /opt/trinitycore-data/authserver.conf
 ```
 
 
 [worldserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/worldserver/worldserver.conf.dist
 [authserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/authserver/authserver.conf.dist
+
+### Attaching to create/modify accounts
+
+
+assuming that the `worldserver` is running detached as described above, attach to it:
+
+```sh
+docker attach --sig-proxy=false worldserver
+```
+
+and run [commands](http://collab.kpsn.org/display/tc/Server+Setup#ServerSetup-FinalSteps) on the `worldserver`
+
+```sh
+account create <user> <pass>
+account set gmlevel <user> <gmlevel> <realmID>
+```
+
+something like this that creates an account with user and password then give that user super gm privileges across all realms:
+
+```sh
+account create ralf wow5ever
+account set gmlevel ralf 4 -1
+```
+`ctrl + c` to detach from the process while keeping `worldserver` running in the background.
