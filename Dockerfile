@@ -41,4 +41,7 @@ ADD	build.sh /etc/build.sh
 RUN	/etc/build.sh
 RUN	rm -rf $TC_DIR
 
+ADD	extract_maps.sh /etc/extract_maps.sh
+RUN	chmod +x /etc/extract_maps.sh
+
 ENV	DEBIAN_FRONTEND	newt
