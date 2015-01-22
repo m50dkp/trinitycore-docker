@@ -18,7 +18,7 @@ RUN     mkdir -p $TC_DIR && \
 
 RUN	mkdir -p $TC_DIR/sql && \
 	cd $TC_DIR/sql && \
-	wget $TC_DB && \
+	wget $TC_DB_URL && \
 	7z x *.7z
 
 ADD	build.sh /etc/db/build.sh
