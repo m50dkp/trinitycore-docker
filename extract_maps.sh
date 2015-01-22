@@ -17,6 +17,7 @@ mkdir vmaps
 /usr/local/bin/vmap4assembler Buildings vmaps
 
 # mmaps
+mkdir mmaps
 /usr/local/bin/mmaps_generator
 
 # copy it all
