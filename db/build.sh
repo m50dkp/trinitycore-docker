@@ -5,7 +5,7 @@ export MYSQL_ROOT_PASSWORD="password"
 /docker-entrypoint.sh mysqld_safe &
 
 # we need to wait for that to complete
-mysqladmin --silent --wait=30 ping || exit 1
+mysqladmin -uroot -p"$MYSQL_ROOT_PASSWORD" --silent --wait=30 ping || exit 1
 
 # now initialize
 cat $SQL/create/create_mysql.sql | mysql -h"localhost" -P"3306" -uroot -p"$MYSQL_ROOT_PASSWORD"
