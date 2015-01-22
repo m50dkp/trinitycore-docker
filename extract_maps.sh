@@ -6,7 +6,7 @@
 cd /opt/wow-client
 
 # kill existings
-rm -r dbc maps mmaps vmaps
+rm -r dbc maps mmaps vmaps Buildings
 
 # dbc, maps
 /usr/local/bin/mapextractor -f 0
@@ -21,4 +21,4 @@ mkdir vmaps
 
 # copy it all
 cp -r dbc maps mmaps vmaps /opt/trinitycore-data
-rm -r dbc maps mmaps vmaps
+rm -r dbc maps mmaps vmaps Buildings
