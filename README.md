@@ -67,6 +67,6 @@ something like this that creates an account with user and password then give tha
 
 ```sh
 account create ralf wow5ever
-account set gmlevel ralf 4 -1
+account set gmlevel ralf 3 -1
 ```
 `ctrl + c` to detach from the process while keeping `worldserver` running in the background.
