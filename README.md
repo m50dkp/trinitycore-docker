@@ -13,10 +13,9 @@ The `build.sh` reflects the [Core Installation](http://collab.kpsn.org/display/t
 $ docker build .
 ```
 
-Builds the trinity core project and tools.
+Builds the trinity core project and tools. Tools are built to /usr/local/bin
 
 TODO:
-* Cleanup after building
 * Tools are built in the /build directory in the image. Will likely need those tools for map extraction, so
 map extraction needs to happen in here?
 

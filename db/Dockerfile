@@ -2,7 +2,8 @@ FROM	mariadb:latest
 
 ENV	TC_DIR	/usr/local/trinitycore
 ENV	TC_REPO	git://github.com/TrinityCore/TrinityCore.git
-ENV	TC_DB	https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.57/TDB_full_335.57_2014_10_19.7z
+ENV	TC_DB_URL	https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.57/TDB_full_335.57_2014_10_19.7z
+
 ENV	DEBIAN_FRONTEND noninteractive
 
 RUN	apt-get update && \
@@ -17,7 +18,7 @@ RUN     mkdir -p $TC_DIR && \
 
 RUN	mkdir -p $TC_DIR/sql && \
 	cd $TC_DIR/sql && \
-	wget 'https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.57/TDB_full_335.57_2014_10_19.7z' && \
+	wget $TC_DB && \
 	7z x *.7z
 
 ADD	build.sh /etc/db/build.sh
