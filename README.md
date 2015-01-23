@@ -89,6 +89,16 @@ $ docker run --rm -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS=$(boot2dock
 
 If deploying to another server, it's likely you'll specify that server's address instead.
 
+### help
+
+Run the help command!
+
+```sh
+docker run --rm -it trinitycore help
+```
+
+
+
 ### Running the worldserver
 
 TODO: figure out DB stuff
@@ -112,6 +122,7 @@ docker run -ti -v --name authserver ~/Desktop/WoW/ServerData:/opt/trinitycore-da
 
 [worldserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/worldserver/worldserver.conf.dist
 [authserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/authserver/authserver.conf.dist
+
 
 ### Attaching to create/modify accounts
 
