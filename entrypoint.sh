@@ -43,10 +43,11 @@ then
 
     # set the user given ip address for the database
     # and set the user given data dir? base info needed to go!
-    sed -i '' "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i '' "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;world\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i '' "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;characters\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i '' "s/DataDir.*$/DataDir = \"$USER_DATA_DIR\"/" /opt/trinitycore-data/worldserver.conf
+    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/worldserver.conf
+    sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;world\"/" /opt/trinitycore-data/worldserver.conf
+    sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;characters\"/" /opt/trinitycore-data/worldserver.conf
+    sed -i "s%DataDir.*$%DataDir = \"$USER_DATA_DIR\"%" /opt/trinitycore-data/worldserver.conf
+
   fi
 
   # RUN. IT.
@@ -73,7 +74,7 @@ then
     cp /usr/local/etc/authserver.conf.dist /opt/trinitycore-data/confs/authserver.conf
 
     # set the user given ip address for the database
-    sed -i '' "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/authserver.conf
+    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/authserver.conf
 
   fi
 
