@@ -22,7 +22,21 @@ then
   # if not, copy in the default and change the ip address
   # and the data dir for the vmaps and such
   if [ ! -a '/opt/trinitycore-data/worldserver.conf']; then
+
     echo "using default worldserver conf file"
+
+    # TODO: give better help
+    if [! -z "$USER_IP_ADDRESS"]; then
+      echo >&2 'error: USER_IP_ADDRESS not set'
+      echo >&2 '  Specify your ip address'
+      exit 1
+    fi
+
+    if [! -z "$USER_DATA_DIR"]; then
+      echo >&2 'error: USER_DATA_DIR not set'
+      echo >&2 '  Specify the path to maps, mmaps, vmaps, dbc'
+      exit 1
+    fi
 
     # copy installed via TrinityCore repo
     cp /usr/local/etc/worldserver.conf.dist /opt/trinitycore-data/worldserver.conf
@@ -47,6 +61,13 @@ then
   # if not, copy in the default and change the ip address
   if [ ! -a '/opt/trinitycore-data/authserver.conf']; then
     echo "using default auth conf file"
+
+    # TODO: give better help
+    if [! -z "$USER_IP_ADDRESS"]; then
+      echo >&2 'error: USER_IP_ADDRESS not set'
+      echo >&2 '  Specify your ip address'
+      exit 1
+    fi
 
     # copy installed via TrinityCore repo
     cp /usr/local/etc/authserver.conf.dist /opt/trinitycore-data/confs/authserver.conf
