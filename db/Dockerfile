@@ -1,28 +1,19 @@
-FROM	mariadb:latest
+FROM mariadb:latest
 
-ENV	TC_DIR	/usr/local/trinitycore
-ENV	TC_REPO	git://github.com/TrinityCore/TrinityCore.git
-ENV	TC_DB_URL	https://github.com/TrinityCore/TrinityCore/releases/download/TDB335.57/TDB_full_335.57_2014_10_19.7z
+ENV DEBIAN_FRONTEND noninteractive
 
-ENV	DEBIAN_FRONTEND noninteractive
+RUN apt-get update && \
+  apt-get install -y \
+  git-core \
+  wget \
+  p7zip-full
 
-RUN	apt-get update && \
-	apt-get install -y \
-	git-core \
-	wget \
-	p7zip-full
+ADD install.sh /etc/db/install.sh
+RUN chmod +x /etc/db/install.sh
 
-RUN     mkdir -p $TC_DIR && \
-	cd $TC_DIR && \
-	git clone -b 3.3.5 --depth 1 $TC_REPO
+ADD entrypoint.sh /etc/db/entrypoint.sh
+RUN chmod +x /etc/db/entrypoint.sh
 
-RUN	mkdir -p $TC_DIR/sql && \
-	cd $TC_DIR/sql && \
-	wget $TC_DB_URL && \
-	7z x *.7z
+ENTRYPOINT ["/etc/db/entrypoint.sh"]
 
-ADD	build.sh /etc/db/build.sh
-RUN	/etc/db/build.sh
-RUN	rm -rf $TC_DIR
-
-ENV	DEBIAN_FRONTEND newt
+ENV DEBIAN_FRONTEND newt

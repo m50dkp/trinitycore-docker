@@ -1,3 +1,5 @@
+#/bin/bash
+
 cd $TC_DIR/TrinityCore
 mkdir build
 cd build

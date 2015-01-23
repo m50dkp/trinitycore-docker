@@ -1,5 +1,6 @@
 # trinitycore-docker
 
+
 See the [TrinityCore Installation Guide](http://collab.kpsn.org/display/tc/Installation+Guide) for useful
 documentation on building TC from scratch.
 
@@ -7,20 +8,75 @@ The debian packages installed in this `Dockerfile` come from [here](http://colla
 
 The `build.sh` reflects the [Core Installation](http://collab.kpsn.org/display/tc/Core+Installation).
 
-### Build
+## TODO
+
+* update extract_maps to write to /opt/trinitycore-data if possible.
+that way we can mount the client data as read-only. currently the map data is
+written to the client directory first then manually moved over with `cp`.
+* add a 'help' command to the entrypoint scripts.
+
+## Build
 
 ```sh
-$ docker build . -t trinitycore
+$ docker build -t trinitycore .
 ```
 
-Builds the trinity core project and tools. Tools are built to /usr/local/bin
+Builds the trinity core project and tools. Tools are built to /usr/local/bin.
+The resulting docker image has a custom entrypoint for executing various tasks
+and running the resulting servers.
 
-### Running the maps extractor
+### data
 
-the `extract_maps.sh` script expects the World of Warcraft (v3.3.5a) client directory to be mounted to `/opt/wow-client`, and for a host directory to be mounted as `/opt/trinintycore-data` for the extracted data. The following command is an example of extracting the maps and saving them to `~/WoW/ServerData` on the host:
+The data command creates a [data-only][] container. A data-only container can
+be used to persist and share data across multiple containers. This will be used
+for extracting maps and passing them to the `worldserver`.
+
+To create an empty data-only container run the following.
 
 ```sh
-docker run -ti -v ~/Desktop/WoW/WoW3.3.5a:/opt/wow-client -v ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /etc/extract_maps.sh
+$ docker run --name my-data -it trinitycore data
+```
+
+Notice that container is started and immediately finishes executing. However,
+the container still exists, and can be seen with `docker ps -a`
+
+[data-only]: https://docs.docker.com/userguide/dockervolumes/#creating-and-mounting-a-data-volume-container
+
+### extract-maps
+
+The `extract_maps.sh` script expects the World of Warcraft (v3.3.5a) client
+directory to be mounted to `/opt/wow-client`, and for a volume to be mounted as
+`/opt/trinintycore-data` for the extracted data. A data-only container should
+be used for `/opt/trinitycore-data`.
+
+The following is an example of extracting the maps and saving them to
+`~/WoW/ServerData` on the host machine.
+
+First, create a data-only container using the `data` command, and mount the
+host volume with the `-v` option.
+
+```sh
+$ docker run --name tc-map-data -v ~/WoW/ServerData:/opt/trinitycore-data -it trinitycore data
+```
+
+Note that we used the `--name` option to provide a custom name to our container.
+Once there is a data-only container, we can run the `extract-maps` command.
+
+```sh
+$ docker run --rm --volumes-from tc-map-data -it -v ~/Desktop/WoW/WoW3.3.5a:/opt/wow-client trinitycore extract-maps
+```
+
+The `--volumes-from` command will map `/opt/trinitycore-data` to
+`~/WoW/ServerData` via the data-only container. The `-v` option mounts the
+location of the WoW client on the host machine to the expected location
+within the container.
+
+Alternatively, if maps are already extracted, they can be mounted into the
+data-only container directly, thus avoiding the lengthy extraction process.
+Assuming our maps are located in `~/wow/maps`
+
+```sh
+$ docker run --name tc-map-data -it -v ~/wow/maps/:/opt/trinitycore-data trinitycore data
 ```
 
 ### Running the worldserver
