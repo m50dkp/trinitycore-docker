@@ -79,6 +79,16 @@ Assuming our maps are located in `~/wow/maps`
 $ docker run --name tc-map-data -it -v ~/wow/maps/:/opt/trinitycore-data trinitycore data
 ```
 
+### Updating permissions and Realm IP Address
+
+On mac, assuming you are running boot2docker (and thus want to use it's bridged NAT address as the entry):
+
+```sh
+$ docker run --rm -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS=$(boot2docker ip) trinitycore update-ip
+```
+
+If deploying to another server, it's likely you'll specify that server's address instead.
+
 ### Running the worldserver
 
 TODO: figure out DB stuff
