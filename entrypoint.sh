@@ -46,7 +46,7 @@ then
     sed -i '' "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/worldserver.conf
     sed -i '' "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;world\"/" /opt/trinitycore-data/worldserver.conf
     sed -i '' "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;characters\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i '' "s/DataDir.*/DataDir = \"$USER_DATA_DIR\"/" /opt/trinitycore-data/worldserver.conf
+    sed -i '' "s/DataDir.*$/DataDir = \"$USER_DATA_DIR\"/" /opt/trinitycore-data/worldserver.conf
   fi
 
   # RUN. IT.
