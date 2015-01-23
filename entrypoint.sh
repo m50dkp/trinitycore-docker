@@ -136,6 +136,28 @@ then
   echo ""
   echo 'END OF HELP good night'
 
+elif [ "$CMD" = 'update-ip' ]
+then
+
+    if [ -z "$USER_IP_ADDRESS" ]; then
+      echo >&2 'error: USER_IP_ADDRESS env var required'
+      exit 1
+    fi
+
+    if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
+      echo >&2 'error: MYSQL_ROOT_PASSWORD env var required'
+      exit 1
+    fi
+
+    # TODO: is there a way to do this without using a heredoc?
+    mysql -h"$USER_IP_ADDRESS" -uroot -p"$MYSQL_ROOT_PASSWORD" <<-GrantDoc
+    GRANT ALL PRIVILEGES ON world . * TO 'trinity'@'%' WITH GRANT OPTION;
+    GRANT ALL PRIVILEGES ON characters . * TO 'trinity'@'%' WITH GRANT OPTION;
+    GRANT ALL PRIVILEGES ON auth . * TO 'trinity'@'%' WITH GRANT OPTION;
+    use auth;
+    UPDATE realmlist set address='${USER_IP_ADDRESS}', localAddress='${USER_IP_ADDRESS}' WHERE name='Trinity';
+GrantDoc
+
 else
 
   exec "$@"
