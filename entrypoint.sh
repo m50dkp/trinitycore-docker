@@ -120,6 +120,8 @@ then
   echo '      specifying the environment variable USER_IP_ADDRESS.'
   echo '      Specify a public ip address if you want others outside'
   echo '      of your local network to connect to your server.'
+  echo '      You must also specify the environment variable'
+  echo '      MYSQL_ROOT_PASSWORD'
   echo ""
   echo '  worldserver'
   echo '      Start the worldserver. If you do not mount a worldserver.conf file,'
