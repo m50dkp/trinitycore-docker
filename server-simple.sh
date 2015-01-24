@@ -2,9 +2,17 @@
 
 # example:
 # $ ./server-simple.sh /Users/drew/Desktop/WoW/ServerData/ $(boot2docker ip)
-# 
+#
 # To attach to the worldserver interactively:
 # $ docker attach --sig-proxy=false trinitycore-worldserver
+#
+# To delete the servers to regenerate things:
+# $ docker rm -f trinitycore-dbserver trinitycore-authserver trinitycore-worldserver
+#
+# To start from scratch (!):
+# docker rm -f trinitycore-maps trinitycore-db-mysql trinitycore-dbserver trinitycore-authserver trinitycore-worldserver
+# 
+# REMEMBER TO FORWARD PORTS (3724,8085) FROM THE VM (via virtualbox) to your local machine if you want others to join
 
 DATA_DIR=$1
 PUBLIC_IP=$2
