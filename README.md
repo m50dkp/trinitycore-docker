@@ -6,7 +6,7 @@ documentation on building TC from scratch.
 
 The debian packages installed in this `Dockerfile` come from [here](http://collab.kpsn.org/display/tc/Requirements).
 
-The `build.sh` reflects the [Core Installation](http://collab.kpsn.org/display/tc/Core+Installation).
+The `build_core.sh` reflects the [Core Installation](http://collab.kpsn.org/display/tc/Core+Installation).
 
 ## Build
 
@@ -115,40 +115,84 @@ Run the help command!
 docker run --rm -it trinitycore help
 ```
 
+# Worldserver and Authserver
 
+The worldserver and authserver both depend on a database connection. Docker's `--link` command effectively exposes the ports of a running container to a new container via environment variables. Therefore, the [database container](db/README.md) must be running before attempting to start either the auth or world servers.
 
-### Running the worldserver
+It is assumed that the name of the running db container is 'tc-dbserver'.
 
-TODO: figure out DB stuff
+## Running the worldserver
 
-Grab [worldserver.conf.dist][], copy it to your `ServerData` folder, and rename it to `worldserver.conf`. Make any modifications needed, such as database credentials (hopefully this isn't necessary eventually), and then run something like:
+You have two options:
+
+1. Use the default configuration
+2. Use a custom configuration
+
+NOTE: in the following commands, the `-i` is very important when running in daemon mode. Without it, the servers will not actually start or will not later be accessible via interactive prompt using `docker attach`.
+
+### Default Configuration File
+
+The worldserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore-data/conf/` if it does not exist.
 
 ```sh
-docker run -ti -v --name worldserver ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /usr/local/bin/worldserver -c /opt/trinitycore-data/worldserver.conf
+$ docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 --volumes-from tc-maps trinitycore worldserver
 ```
 
-### Running the authserver
+### Custom Configuration
 
-TODO: figure out DB stuff
-
-Grab [authserver.conf.dist][], copy it to your `ServerData` folder, and rename it to `authserver.conf`. Make any modifications needed, such as database credentials (hopefully this isn't necessary eventually), and then run something like:
+Grab [worldserver.conf.dist][], copy it somewhere on your system, and rename it to `worldserver.conf`. Make any modifications needed. You can ignore the mysql connection details, because those will be changed automatically by the entry script.
 
 ```sh
-docker run -ti -v --name authserver ~/Desktop/WoW/ServerData:/opt/trinitycore-data trinitycore /usr/local/bin/authserver -c /opt/trinitycore-data/authserver.conf
+$ docker run --name tc-worldserver -i -d -v path/to/your/worldserver.conf:/opt/trinitycore-data/conf/worldserver.conf --link tc-dbserver:TCDB -p 8085:8085 --volumes-from tc-maps trinitycore worldserver
 ```
 
+## Running the authserver
+
+You have two options:
+
+1. Use the default configuration
+2. Use a custom configuration
+
+NOTE: in the following commands, the `-i` is very important when running in daemon mode. Without it, the servers will not actually start or will not later be accessible via interactive prompt using `docker attach`.
+
+### Default Configuration File
+
+The authserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore-data/conf/` if it does not exist.
+
+```sh
+$ docker run --name tc-authserver -i -d --link tc-dbserver:TCDB -p 3724:3724 --volumes-from tc-maps trinitycore authserver
+```
+
+### Custom Configuration
+
+Grab [authserver.conf.dist][], copy it somewhere on your system, and rename it to `authserver.conf`. Make any modifications needed. You can ignore the mysql connection details, because those will be changed automatically by the entry script.
+
+```sh
+$ docker run --name tc-authserver -i -d -v path/to/your/authserver.conf:/opt/trinitycore-data/conf/authserver.conf --link tc-dbserver:TCDB -p 3724:3724 --volumes-from tc-maps trinitycore authserver
+```
 
 [worldserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/worldserver/worldserver.conf.dist
 [authserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/authserver/authserver.conf.dist
 
+## Stopping / Starting the world and auth servers
 
-### Attaching to create/modify accounts
+```sh
+$ docker stop tc-worldserver
+$ docker stop tc-authserver
+```
+
+```sh
+$ docker start tc-worldserver
+$ docker start tc-authserver
+```
+
+## Attaching to create/modify accounts
 
 
 assuming that the `worldserver` is running detached as described above, attach to it:
 
 ```sh
-docker attach --sig-proxy=false worldserver
+docker attach --sig-proxy=false tc-worldserver
 ```
 
 and run [commands](http://collab.kpsn.org/display/tc/Server+Setup#ServerSetup-FinalSteps) on the `worldserver`
