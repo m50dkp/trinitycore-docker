@@ -119,7 +119,11 @@ docker run --rm -it trinitycore help
 
 The worldserver and authserver both depend on a database connection. Docker's `--link` command effectively exposes the ports of a running container to a new container via environment variables. Therefore, the [database container](db/README.md) must be running before attempting to start either the auth or world servers.
 
-It is assumed that the name of the running db container is 'tc-dbserver'.
+It is assumed that the name of the running db container is `tc-dbserver`.
+
+The worldserver depends on the extracted maps accessible at `/opt/trinitycore/maps`. In the below examples, this volume is provided by a container named `tc-maps`.
+
+NOTE: in the following commands, the `-i` is very important when running in daemon mode. Without it, the servers will not actually start or will not later be accessible via interactive prompt using `docker attach`.
 
 ## Running the worldserver
 
@@ -132,7 +136,7 @@ NOTE: in the following commands, the `-i` is very important when running in daem
 
 ### Default Configuration File
 
-The worldserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore-data/conf/` if it does not exist.
+The worldserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore/conf/` if it does not exist.
 
 ```sh
 $ docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 --volumes-from tc-maps trinitycore worldserver
@@ -143,7 +147,7 @@ $ docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 --
 Grab [worldserver.conf.dist][], copy it somewhere on your system, and rename it to `worldserver.conf`. Make any modifications needed. You can ignore the mysql connection details, because those will be changed automatically by the entry script.
 
 ```sh
-$ docker run --name tc-worldserver -i -d -v path/to/your/worldserver.conf:/opt/trinitycore-data/conf/worldserver.conf --link tc-dbserver:TCDB -p 8085:8085 --volumes-from tc-maps trinitycore worldserver
+$ docker run --name tc-worldserver -i -d -v path/to/your/worldserver.conf:/opt/trinitycore/conf/worldserver.conf --link tc-dbserver:TCDB -p 8085:8085 --volumes-from tc-maps trinitycore worldserver
 ```
 
 ## Running the authserver
@@ -153,14 +157,12 @@ You have two options:
 1. Use the default configuration
 2. Use a custom configuration
 
-NOTE: in the following commands, the `-i` is very important when running in daemon mode. Without it, the servers will not actually start or will not later be accessible via interactive prompt using `docker attach`.
-
 ### Default Configuration File
 
-The authserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore-data/conf/` if it does not exist.
+The authserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore/conf/` if it does not exist.
 
 ```sh
-$ docker run --name tc-authserver -i -d --link tc-dbserver:TCDB -p 3724:3724 --volumes-from tc-maps trinitycore authserver
+$ docker run --name tc-authserver -i -d --link tc-dbserver:TCDB -p 3724:3724 trinitycore authserver
 ```
 
 ### Custom Configuration
@@ -168,7 +170,7 @@ $ docker run --name tc-authserver -i -d --link tc-dbserver:TCDB -p 3724:3724 --v
 Grab [authserver.conf.dist][], copy it somewhere on your system, and rename it to `authserver.conf`. Make any modifications needed. You can ignore the mysql connection details, because those will be changed automatically by the entry script.
 
 ```sh
-$ docker run --name tc-authserver -i -d -v path/to/your/authserver.conf:/opt/trinitycore-data/conf/authserver.conf --link tc-dbserver:TCDB -p 3724:3724 --volumes-from tc-maps trinitycore authserver
+$ docker run --name tc-authserver -i -d -v path/to/your/authserver.conf:/opt/trinitycore/conf/authserver.conf --link tc-dbserver:TCDB -p 3724:3724 trinitycore authserver
 ```
 
 [worldserver.conf.dist]: https://github.com/TrinityCore/TrinityCore/blob/3.3.5/src/server/worldserver/worldserver.conf.dist
