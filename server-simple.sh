@@ -34,7 +34,6 @@ docker create -it --name trinitycore-db-mysql -it trinitycore-db data
 
 if [ ! -z "$EXTRACT_MAPS_USING_CLIENT_DIR" ]; then
   docker run --rm -it --volumes-from trinitycore-maps -v ${EXTRACT_MAPS_USING_CLIENT_DIR}:/opt/wow-client trinitycore extract-maps
-  exit
 fi
 
 # start servers
