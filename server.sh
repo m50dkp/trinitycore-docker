@@ -68,7 +68,6 @@ start_server() {
           echo "#"
           echo "# Starting auth server..."
           echo "#"
-          docker start trinitycore-db-maps
           docker run --rm -it --volumes-from trinitycore-db-maps trinitycore authserver
           exit 0
           ;;
@@ -84,7 +83,6 @@ start_server() {
           echo "#"
           echo "# Starting world server..."
           echo "#"
-          docker start trinitycore-db-maps
           docker run --rm -it --volumes-from trinitycore-db-maps trinitycore worldserver
           exit 0
           ;;
@@ -92,7 +90,7 @@ start_server() {
           echo "#"
           echo "# Starting db server..."
           echo "#"
-          docker start -ai trinitycore-db-server
+          docker start trinitycore-db-server
           exit 0
           ;;
       esac
@@ -104,9 +102,7 @@ start_server() {
   echo "#"
 
   # start mysld
-  docker start -ai trinitycore-db-maps
-  docker start -ai trinitycore-db-mysql
-  docker start -ai trinitycore-db-server
+  docker start trinitycore-db-server
 
   # start worldserver
   # conf files should be in $(pwd)
@@ -120,7 +116,6 @@ stop_server() {
     -d | --docker)
       echo "stopping docker containers..."
       docker stop trinitycore-db-server
-      docker stop trinitycore-db-mysql
       exit 0
       ;;
     -s | --server)

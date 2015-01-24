@@ -25,30 +25,21 @@ then
 
     echo "using default worldserver conf file"
 
-    # TODO: give better help
-    if [ -z "$USER_IP_ADDRESS" ]; then
-      echo >&2 'error: USER_IP_ADDRESS not set'
-      echo >&2 '  Specify your ip address'
-      exit 1
-    fi
-
-    if [ -z "$USER_DATA_DIR" ]; then
-      echo >&2 'error: USER_DATA_DIR not set'
-      echo >&2 '  Specify the path to maps, mmaps, vmaps, dbc'
-      exit 1
-    fi
-
     # copy installed via TrinityCore repo
     cp /usr/local/etc/worldserver.conf.dist /opt/tc/conf/worldserver.conf
 
-    # set the user given ip address for the database
-    # and set the user given data dir? base info needed to go!
-    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/tc/conf/worldserver.conf
-    sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;world\"/" /opt/tc/conf/worldserver.conf
-    sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;characters\"/" /opt/tc/conf/worldserver.conf
-    sed -i "s%DataDir.*$%DataDir = \"$USER_DATA_DIR\"%" /opt/tc/conf/worldserver.conf
-
   fi
+
+  if [ -z "$TCDB_PORT_3306_TCP_ADDR" ]; then
+    echo "Could not find linked database container. Was one linked with an alias of TCDB?"
+    exit 1
+  fi
+
+  # use the linked 
+  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" /opt/tc/conf/worldserver.conf
+  sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;world\"/" /opt/tc/conf/worldserver.conf
+  sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;characters\"/" /opt/tc/conf/worldserver.conf
+  sed -i "s%DataDir.*$%DataDir = \"/opt/tc/maps\"%" /opt/tc/conf/worldserver.conf
 
   # RUN. IT.
   /usr/local/bin/worldserver -c /opt/tc/conf/worldserver.conf
@@ -63,20 +54,18 @@ then
   if [ ! -f '/opt/tc/conf/authserver.conf' ]; then
     echo "using default auth conf file"
 
-    # TODO: give better help
-    if [ -z "$USER_IP_ADDRESS" ]; then
-      echo >&2 'error: USER_IP_ADDRESS not set'
-      echo >&2 '  Specify your ip address'
-      exit 1
-    fi
-
     # copy installed via TrinityCore repo
     cp /usr/local/etc/authserver.conf.dist /opt/tc/conf/authserver.conf
 
-    # set the user given ip address for the database
-    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/tc/conf/authserver.conf
-
   fi
+
+  if [ -z "$TCDB_PORT_3306_TCP_ADDR" ]; then
+    echo "Could not find linked database container. Was one linked with an alias of TCDB?"
+    exit 1
+  fi
+
+  # update the config file with the linked db container address/port
+  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" /opt/tc/conf/authserver.conf
 
   # RUN. IT.
   /usr/local/bin/authserver -c /opt/tc/conf/authserver.conf
@@ -142,23 +131,29 @@ then
 elif [ "$CMD" = 'update-ip' ]
 then
 
-    if [ -z "$USER_IP_ADDRESS" ]; then
-      echo >&2 'error: USER_IP_ADDRESS env var required'
-      exit 1
-    fi
-
     if [ -z "$MYSQL_ROOT_PASSWORD" ]; then
       echo >&2 'error: MYSQL_ROOT_PASSWORD env var required'
       exit 1
     fi
 
+    if [ -z "$TCDB_PORT_3306_TCP_ADDR" ]; then
+      echo "Could not find linked database container. Was one linked with an alias of TCDB?"
+      exit 1
+    fi
+
+    if [ -z "$USER_IP_ADDRESS" ]; then
+      echo >&2 'error: USER_IP_ADDRESS env var required'
+      exit 1
+    fi
+
     # TODO: is there a way to do this without using a heredoc?
-    mysql -h"$USER_IP_ADDRESS" -uroot -p"$MYSQL_ROOT_PASSWORD" <<-GrantDoc
-    GRANT ALL PRIVILEGES ON world . * TO 'trinity'@'%' WITH GRANT OPTION;
-    GRANT ALL PRIVILEGES ON characters . * TO 'trinity'@'%' WITH GRANT OPTION;
-    GRANT ALL PRIVILEGES ON auth . * TO 'trinity'@'%' WITH GRANT OPTION;
+    mysql -h"$TCDB_PORT_3306_TCP_ADDR" -uroot -p"$MYSQL_ROOT_PASSWORD" <<-GrantDoc
+    GRANT ALL PRIVILEGES ON world . * TO 'trinity'@'%' IDENTIFIED BY 'trinity' WITH GRANT OPTION;
+    GRANT ALL PRIVILEGES ON characters . * TO 'trinity'@'%' IDENTIFIED BY 'trinity' WITH GRANT OPTION;
+    GRANT ALL PRIVILEGES ON auth . * TO 'trinity'@'%' IDENTIFIED BY 'trinity' WITH GRANT OPTION;
     use auth;
     UPDATE realmlist set address='${USER_IP_ADDRESS}', localAddress='${USER_IP_ADDRESS}' WHERE name='Trinity';
+    FLUSH PRIVILEGES;
 GrantDoc
 
 else
