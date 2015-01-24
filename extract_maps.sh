@@ -33,5 +33,5 @@ mkdir mmaps
 $BIN/mmaps_generator
 
 # copy it all
-cp -r dbc maps mmaps vmaps /opt/trinitycore-data
+cp -r dbc maps mmaps vmaps /opt/tc/maps
 rm -r dbc maps mmaps vmaps Buildings

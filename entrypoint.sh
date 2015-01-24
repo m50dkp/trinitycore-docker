@@ -10,7 +10,7 @@ then
 elif [ "$CMD" = 'extract-maps' ]
 then
 
-  echo 'Extracting maps from /opt/wow-client into /opt/trinitycore-data'
+  echo 'Extracting maps from /opt/wow-client into /opt/tc/maps'
   /etc/extract_maps.sh
 
 elif [ "$CMD" = 'worldserver' ]
@@ -21,7 +21,7 @@ then
   # check to see if the worldserver conf is specified.
   # if not, copy in the default and change the ip address
   # and the data dir for the vmaps and such
-  if [ ! -a '/opt/trinitycore-data/worldserver.conf' ]; then
+  if [ ! -f '/opt/tc/conf/worldserver.conf' ]; then
 
     echo "using default worldserver conf file"
 
@@ -39,19 +39,19 @@ then
     fi
 
     # copy installed via TrinityCore repo
-    cp /usr/local/etc/worldserver.conf.dist /opt/trinitycore-data/worldserver.conf
+    cp /usr/local/etc/worldserver.conf.dist /opt/tc/conf/worldserver.conf
 
     # set the user given ip address for the database
     # and set the user given data dir? base info needed to go!
-    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;world\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;characters\"/" /opt/trinitycore-data/worldserver.conf
-    sed -i "s%DataDir.*$%DataDir = \"$USER_DATA_DIR\"%" /opt/trinitycore-data/worldserver.conf
+    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/tc/conf/worldserver.conf
+    sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;world\"/" /opt/tc/conf/worldserver.conf
+    sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;characters\"/" /opt/tc/conf/worldserver.conf
+    sed -i "s%DataDir.*$%DataDir = \"$USER_DATA_DIR\"%" /opt/tc/conf/worldserver.conf
 
   fi
 
   # RUN. IT.
-  /usr/local/bin/worldserver -c /opt/trinitycore-data/worldserver.conf
+  /usr/local/bin/worldserver -c /opt/tc/conf/worldserver.conf
 
 elif [ "$CMD" = 'authserver' ]
 then
@@ -60,7 +60,7 @@ then
   
   # check to see if the authserver conf is specified.
   # if not, copy in the default and change the ip address
-  if [ ! -a '/opt/trinitycore-data/authserver.conf' ]; then
+  if [ ! -f '/opt/tc/conf/authserver.conf' ]; then
     echo "using default auth conf file"
 
     # TODO: give better help
@@ -71,15 +71,15 @@ then
     fi
 
     # copy installed via TrinityCore repo
-    cp /usr/local/etc/authserver.conf.dist /opt/trinitycore-data/confs/authserver.conf
+    cp /usr/local/etc/authserver.conf.dist /opt/tc/conf/authserver.conf
 
     # set the user given ip address for the database
-    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/trinitycore-data/authserver.conf
+    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$USER_IP_ADDRESS;3306;trinity;trinity;auth\"/" /opt/tc/conf/authserver.conf
 
   fi
 
   # RUN. IT.
-  /usr/local/bin/authserver -c /opt/trinitycore-data/authserver.conf
+  /usr/local/bin/authserver -c /opt/tc/conf/authserver.conf
 
 elif [ "$CMD" = 'help' ]
 then
