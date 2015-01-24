@@ -10,6 +10,22 @@ then
 elif [ "$CMD" = 'mysqld' ]
 then
 
+  # check for data
+  if [ ! -d '/var/lib/mysql/world' ]
+  then
+
+    echo "No TrinityCore data detected. Please run 'init' first."
+
+  else
+    echo 'Starting mysqld...'
+
+    # docker-entrypoint.sh comes from mariadb
+    /docker-entrypoint.sh mysqld_safe
+  fi
+
+elif [ "$CMD" = 'init' ]
+then 
+  
   if [ ! -d '/var/lib/mysql/world' ]
   then
 
@@ -23,11 +39,7 @@ then
     /etc/db/install.sh
 
   fi
-
-  echo 'Starting mysqld...'
-
-  # docker-entrypoint.sh comes from mariadb
-  /docker-entrypoint.sh mysqld_safe
+  
 
 else
 
