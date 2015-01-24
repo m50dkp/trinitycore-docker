@@ -10,8 +10,11 @@
 # $ docker rm -f trinitycore-dbserver trinitycore-authserver trinitycore-worldserver
 #
 # To start from scratch (!):
-# docker rm -f trinitycore-maps trinitycore-db-mysql trinitycore-dbserver trinitycore-authserver trinitycore-worldserver
-# 
+# $ docker rm -f trinitycore-maps trinitycore-db-mysql trinitycore-dbserver trinitycore-authserver trinitycore-worldserver
+#
+# example of connecting to the mysql server via another container for admin purposes:
+# $ docker run --rm --link trinitycore-dbserver:TCDB trinitycore mysql -hTCDB -utrinity -ptrinity -e 'select 1;'
+#
 # REMEMBER TO FORWARD PORTS (3724,8085) FROM THE VM (via virtualbox) to your local machine if you want others to join
 
 DATA_DIR=$1
@@ -36,9 +39,6 @@ docker run --name trinitycore-worldserver -i -d --link trinitycore-dbserver:TCDB
 
 # update realmlist / grant tables to point at the "public" IP (or at least accessible for other people within the same LAN)
 docker run --rm -it --link trinitycore-dbserver:TCDB -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS="$PUBLIC_IP" trinitycore update-ip
-
-# example of connecting to the mysql server via another container for admin purposes:
-# docker run --rm --link trinitycore-dbserver:TCDB trinitycore mysql -hTCDB -utrinity -ptrinity -e 'select 1;'
 
 # ctrl+c gracefully kills things
 #trap control_c SIGINT
