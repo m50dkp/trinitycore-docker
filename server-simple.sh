@@ -17,6 +17,9 @@
 #
 # REMEMBER TO FORWARD PORTS (3724,8085) FROM THE VM (via virtualbox) to your local machine if you want others to join
 
+# TODO: include map extraction, etc...
+
+
 DATA_DIR=$1
 PUBLIC_IP=$2
 
