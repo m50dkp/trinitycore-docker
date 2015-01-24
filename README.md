@@ -8,13 +8,6 @@ The debian packages installed in this `Dockerfile` come from [here](http://colla
 
 The `build.sh` reflects the [Core Installation](http://collab.kpsn.org/display/tc/Core+Installation).
 
-## TODO
-
-* update extract_maps to write to /opt/trinitycore-data if possible.
-that way we can mount the client data as read-only. currently the map data is
-written to the client directory first then manually moved over with `cp`.
-* add a 'help' command to the entrypoint scripts.
-
 ## Build
 
 ```sh
@@ -44,40 +37,65 @@ the container still exists, and can be seen with `docker ps -a`
 
 ### extract-maps
 
+> **Note**: Extracting maps can take hours.
+
 The `extract_maps.sh` script expects the World of Warcraft (v3.3.5a) client
-directory to be mounted to `/opt/wow-client`, and for a volume to be mounted as
-`/opt/trinintycore-data` for the extracted data. A data-only container should
-be used for `/opt/trinitycore-data`.
+directory to be mounted to `/opt/wow-client`. Maps are extracted to
+`/opt/trinitycore/maps`.
 
 The following is an example of extracting the maps and saving them to
-`~/WoW/ServerData` on the host machine.
-
-First, create a data-only container using the `data` command, and mount the
-host volume with the `-v` option.
+`~/WoW/ServerData` on the host machine. Assuming the WoW client is located at
+`~/WoW/WoW3.3.5a`,
 
 ```sh
-$ docker run --name tc-map-data -v ~/WoW/ServerData:/opt/trinitycore-data -it trinitycore data
+$ docker run --rm -it -v ~/WoW/WoW3.3.5a:/opt/wow-client -v ~/WoW/ServerData:/opt/trinitycore/maps trinitycore extract-maps
 ```
 
-Note that we used the `--name` option to provide a custom name to our container.
-Once there is a data-only container, we can run the `extract-maps` command.
+We use the `--rm` option because the extracted maps are written to the host,
+thus the Docker container is no longer needed.
+
+Once the maps are extracted we can mount the maps from the host into a data-only
+container. The resulting container will be used by the `worldserver`.
 
 ```sh
-$ docker run --rm --volumes-from tc-map-data -it -v ~/Desktop/WoW/WoW3.3.5a:/opt/wow-client trinitycore extract-maps
+$ docker create -it --name tc-maps -v ~/WoW/ServerData:/opt/trinitycore/maps trinitycore data
 ```
 
-The `--volumes-from` command will map `/opt/trinitycore-data` to
-`~/WoW/ServerData` via the data-only container. The `-v` option mounts the
-location of the WoW client on the host machine to the expected location
-within the container.
+#### Advanced: Extracting maps into a Docker image
 
-Alternatively, if maps are already extracted, they can be mounted into the
-data-only container directly, thus avoiding the lengthy extraction process.
-Assuming our maps are located in `~/wow/maps`
+It is possible to extract maps into a Docker image. This is useful if you
+plan on deploying to a remote server. Like before, assume the WoW client
+is located at `~/WoW/WoW3.3.5a`.
 
 ```sh
-$ docker run --name tc-map-data -it -v ~/wow/maps/:/opt/trinitycore-data trinitycore data
+$ docker run --name map-container -it -v ~/WoW/WoW3.3.5a:/opt/wow-client trinitycore extract-maps
 ```
+
+We do __not__ use the `--rm` option in this case because the maps are written
+into the Docker container's file system, not the host's. We also do not mount
+`~/WoW/ServerData` to `/opt/trinitycore/maps`. When the extraction is complete,
+the container will be stopped, but still exists. It can be found with
+
+```sh
+$ docker ps -a | grep map-container
+```
+
+Now the container can be committed into an image called `trinitycore-maps`.
+
+```sh
+$ docker commit map-container trinitycore-maps
+```
+
+After `map-container` is committed to an image, the container is not needed and
+can be safely deleted. The resulting image can be pushed to a Docker registry,
+and can be used to create data-only containers to use with `worldserver`.
+
+```sh
+$ docker create -it --name tc-maps trinitycore-maps data
+```
+
+In this example we created a data-only container called `tc-maps` from the
+`trinitycore-maps` Docker image.
 
 ### Updating permissions and Realm IP Address
 

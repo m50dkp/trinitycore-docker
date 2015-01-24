@@ -24,12 +24,15 @@ DATA_DIR=$1
 PUBLIC_IP=$2
 EXTRACT_MAPS_USING_CLIENT_DIR=$3
 
+MAPS_DIR=/opt/trinitycore/maps
+CONF_DIR=/opt/trinitycore/conf
+
 # build
 docker build -t trinitycore ./
 docker build -t trinitycore-db ./db
 
 # create data containers
-docker create -it --name trinitycore-maps -v ${DATA_DIR}/conf:/opt/tc/conf -v ${DATA_DIR}/maps:/opt/tc/maps trinitycore data
+docker create -it --name trinitycore-maps -v ${DATA_DIR}/conf:${CONF_DIR} -v ${DATA_DIR}/maps:${MAPS_DIR} trinitycore data
 docker create -it --name trinitycore-db-mysql -it trinitycore-db data
 
 if [ ! -z "$EXTRACT_MAPS_USING_CLIENT_DIR" ]; then

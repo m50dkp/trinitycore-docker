@@ -1,7 +1,7 @@
 FROM  debian:latest
 
-ENV TC_DIR  /usr/local/trinitycore
-ENV TC_REPO git://github.com/TrinityCore/TrinityCore.git
+ENV TC_DIR     /usr/local/trinitycore
+ENV TC_REPO    git://github.com/TrinityCore/TrinityCore.git
 
 ENV DEBIAN_FRONTEND noninteractive
 
@@ -47,7 +47,9 @@ RUN chmod +x /etc/extract_maps.sh
 ADD entrypoint.sh /etc/entrypoint.sh
 RUN chmod +x /etc/entrypoint.sh
 
-VOLUME  ["/opt/trinitycore-data"]
+ENV CLIENT_DIR /opt/wow-client
+ENV MAPS_DIR   /opt/trinitycore/maps
+ENV CONF_DIR   /opt/trinitycore/conf
 
 ENTRYPOINT  ["/etc/entrypoint.sh"]
 

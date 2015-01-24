@@ -10,23 +10,23 @@ then
 elif [ "$CMD" = 'extract-maps' ]
 then
 
-  echo 'Extracting maps from /opt/wow-client into /opt/tc/maps'
+  echo "Extracting maps from $CLIENT_DIR into $MAPS_DIR"
   /etc/extract_maps.sh
 
 elif [ "$CMD" = 'worldserver' ]
 then
 
   echo 'Starting world server...'
-  
+
   # check to see if the worldserver conf is specified.
   # if not, copy in the default and change the ip address
   # and the data dir for the vmaps and such
-  if [ ! -f '/opt/tc/conf/worldserver.conf' ]; then
+  if [ ! -f "$CONF_DIR/worldserver.conf" ]; then
 
-    echo "using default worldserver conf file"
+    echo 'Using default worldserver conf file'
 
     # copy installed via TrinityCore repo
-    cp /usr/local/etc/worldserver.conf.dist /opt/tc/conf/worldserver.conf
+    cp /usr/local/etc/worldserver.conf.dist $CONF_DIR/worldserver.conf
 
   fi
 
@@ -35,27 +35,27 @@ then
     exit 1
   fi
 
-  # use the linked 
-  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" /opt/tc/conf/worldserver.conf
-  sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;world\"/" /opt/tc/conf/worldserver.conf
-  sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;characters\"/" /opt/tc/conf/worldserver.conf
-  sed -i "s%DataDir.*$%DataDir = \"/opt/tc/maps\"%" /opt/tc/conf/worldserver.conf
+  # use the linked
+  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" $CONF_DIR/worldserver.conf
+  sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;world\"/" $CONF_DIR/worldserver.conf
+  sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;characters\"/" $CONF_DIR/worldserver.conf
+  sed -i "s%DataDir.*$%DataDir = \"$MAPS_DIR\"%" $CONF_DIR/worldserver.conf
 
   # RUN. IT.
-  /usr/local/bin/worldserver -c /opt/tc/conf/worldserver.conf
+  /usr/local/bin/worldserver -c $CONF_DIR/worldserver.conf
 
 elif [ "$CMD" = 'authserver' ]
 then
 
   echo 'Starting auth server...'
-  
+
   # check to see if the authserver conf is specified.
   # if not, copy in the default and change the ip address
-  if [ ! -f '/opt/tc/conf/authserver.conf' ]; then
-    echo "using default auth conf file"
+  if [ ! -f "$CONF_DIR/authserver.conf" ]; then
+    echo 'Using default auth conf file'
 
     # copy installed via TrinityCore repo
-    cp /usr/local/etc/authserver.conf.dist /opt/tc/conf/authserver.conf
+    cp /usr/local/etc/authserver.conf.dist $CONF_DIR/authserver.conf
 
   fi
 
@@ -65,10 +65,10 @@ then
   fi
 
   # update the config file with the linked db container address/port
-  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" /opt/tc/conf/authserver.conf
+  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" $CONF_DIR/authserver.conf
 
   # RUN. IT.
-  /usr/local/bin/authserver -c /opt/tc/conf/authserver.conf
+  /usr/local/bin/authserver -c $CONF_DIR/authserver.conf
 
 elif [ "$CMD" = 'help' ]
 then
@@ -82,7 +82,7 @@ then
   echo ""
   echo 'COMMANDS'
   echo '  authserver'
-  echo '      Start the authserver. If you do not mount an authserver.conf file,' 
+  echo '      Start the authserver. If you do not mount an authserver.conf file,'
   echo '      the default will be used with corresponding ip address given by '
   echo '      the environment variable USER_IP_ADDRESS'
   echo ""
