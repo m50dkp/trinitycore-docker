@@ -22,6 +22,7 @@
 
 DATA_DIR=$1
 PUBLIC_IP=$2
+EXTRACT_MAPS_USING_CLIENT_DIR=$3
 
 # build
 docker build -t trinitycore ./
@@ -30,6 +31,11 @@ docker build -t trinitycore-db ./db
 # create data containers
 docker create -it --name trinitycore-maps -v ${DATA_DIR}/conf:/opt/tc/conf -v ${DATA_DIR}/maps:/opt/tc/maps trinitycore data
 docker create -it --name trinitycore-db-mysql -it trinitycore-db data
+
+if [ ! -z "$EXTRACT_MAPS_USING_CLIENT_DIR" ]; then
+  docker run --rm -it --volumes-from trinitycore-maps -v ${EXTRACT_MAPS_USING_CLIENT_DIR}:/opt/wow-client trinitycore extract-maps
+  exit
+fi
 
 # start servers
 docker run --name trinitycore-dbserver -d -e MYSQL_ROOT_PASSWORD=password --volumes-from trinitycore-db-mysql trinitycore-db mysqld
