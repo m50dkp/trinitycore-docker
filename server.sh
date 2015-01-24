@@ -2,12 +2,14 @@
 
 ###############################################################################
 #
-# Simple script for starting, stopping, destroying, and generally handling 
+# Simple script for starting, stopping, destroying, and generally handling
 # docker commands.
 #
 ###############################################################################
 
 CWD=$(pwd)
+MAPS_DIR=/opt/trinitycore/maps
+CONF_DIR=/opt/trinitycore/conf
 
 update-ip() {
   docker run --rm -it -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS="$1" trinitycore  update-ip
@@ -38,19 +40,19 @@ build() {
   docker build -t trinitycore-db db/
 
   # ask user for maps stuff? whether to use extractor or supply path?
-  
+
   # ask for conf files? or use defaults?
   # if defaults, then need to specify datadir path AND IP address
   # need to run trinitycore update-up to setup realmlist
 
-  # this directory gets mounted with trinitycore-db-maps, so any container that 
+  # this directory gets mounted with trinitycore-db-maps, so any container that
   # uses --volumes-from trinitycore-db-maps will also get the conf files in the correct place
 
   # create containers
   echo "#"
   echo "# Creating containers..."
   echo "#"
-  docker run -it --name trinitycore-db-maps -v ${CWD}/data/conf:/opt/tc/conf -v ${CWD}/data/maps:/opt/tc/maps -it trinitycore data
+  docker run -it --name trinitycore-db-maps -v ${CWD}/data/conf:${CONF_DIR} -v ${CWD}/data/maps:${MAPS_DIR} -it trinitycore data
   docker run -it --name trinitycore-db-mysql -it trinitycore-db data
   docker run -it --name trinitycore-db-server --volumes-from trinitycore-db-mysql -p 3306:3306 -e MYSQL_ROOT_PASSWORD=password trinitycore-db mysqld
 
@@ -237,7 +239,7 @@ case "$1" in
     stop_server $@
   ;;
   *)
-    shift 
+    shift
     help $@
     ;;
 esac

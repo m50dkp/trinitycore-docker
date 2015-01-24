@@ -8,7 +8,7 @@ set -e
 DIRS=(dbc maps mmaps vmaps Buildings)
 BIN=/usr/local/bin/
 
-cd /opt/wow-client
+cd $CLIENT_DIR
 
 # kill existings directories if they exist
 for d in ${DIRS[@]}
@@ -33,5 +33,10 @@ mkdir mmaps
 $BIN/mmaps_generator
 
 # copy it all
-cp -r dbc maps mmaps vmaps /opt/tc/maps
+if [ ! -d "$MAPS_DIR" ]
+then
+  mkdir -p $MAPS_DIR
+fi
+
+cp -r dbc maps mmaps vmaps $MAPS_DIR
 rm -r dbc maps mmaps vmaps Buildings
