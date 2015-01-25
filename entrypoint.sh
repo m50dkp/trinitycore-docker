@@ -26,6 +26,7 @@ then
     echo 'Using default worldserver conf file'
 
     # copy installed via TrinityCore repo
+    mkdir -p $CONF_DIR
     cp /usr/local/etc/worldserver.conf.dist $CONF_DIR/worldserver.conf
 
   fi
@@ -55,6 +56,7 @@ then
     echo 'Using default auth conf file'
 
     # copy installed via TrinityCore repo
+    mkdir -p $CONF_DIR
     cp /usr/local/etc/authserver.conf.dist $CONF_DIR/authserver.conf
 
   fi
