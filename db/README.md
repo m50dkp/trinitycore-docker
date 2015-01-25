@@ -40,7 +40,7 @@ $ docker run --name tc-mysql-data trinitycore-db data
 Initializes mysql it with the base [TDB](http://collab.kpsn.org/display/tc/Databases+Installation).
 
 ```sh
-$ docker run --rm -ti --volumes-from tc-mysql-data trinitycore-db init
+$ docker run --rm -ti --volumes-from tc-mysql-data -e MYSQL_ROOT_PASSWORD=password trinitycore-db init
 ```
 
 ### mysqld
