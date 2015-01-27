@@ -35,11 +35,11 @@ if [ ! -z "$EXTRACT_MAPS_USING_CLIENT_DIR" ]; then
   docker run --name map-container -it -v ${EXTRACT_MAPS_USING_CLIENT_DIR}:/opt/wow-client trinitycore extract-maps
   docker commit map-container trinitycore-maps
   docker rm map-container
-  docker create -it --name tc-maps trinitycore-maps data
+  docker run -it --name tc-maps -v /opt/trinitycore trinitycore-maps data
 fi
 
 # create database data container
-docker create -it --name tc-mysql-data -it trinitycore-db data
+docker run -it --name tc-mysql-data -it trinitycore-db data
 
 # init server
 docker run --rm -ti --volumes-from tc-mysql-data -e MYSQL_ROOT_PASSWORD=password trinitycore-db init

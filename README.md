@@ -91,11 +91,11 @@ can be safely deleted. The resulting image can be pushed to a Docker registry,
 and can be used to create data-only containers to use with `worldserver`.
 
 ```sh
-$ docker create -it --name tc-maps trinitycore-maps data
+$ docker run -it --name tc-maps -v /opt/trinitycore trinitycore-maps data
 ```
 
 In this example we created a data-only container called `tc-maps` from the
-`trinitycore-maps` Docker image.
+`trinitycore-maps` Docker image, and exposed `/opt/trinitycore` as an external volume that can later be included in _another_ container using `--volumes-from`.
 
 ### Updating permissions and Realm IP Address
 
