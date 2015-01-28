@@ -23,7 +23,9 @@ DELIMITER //
 DROP PROCEDURE IF EXISTS armorDrops;
 CREATE PROCEDURE armorDrops
 (InventoryType tinyint(3),
- Material tinyint(3))
+ Material tinyint(3),
+ MinLevel int,
+ MaxLevel int)
 BEGIN
   DROP TEMPORARY TABLE IF EXISTS loot;
   CREATE TEMPORARY TABLE loot AS
@@ -38,11 +40,13 @@ BEGIN
     JOIN loot as l ON l.Reference = rl.entry
     WHERE l.Reference != 0;
 
-  SELECT DISTINCT it.entry, it.name FROM item_template as it
+  SELECT DISTINCT it.entry, it.name, it.Quality, it.ItemLevel, it.RequiredLevel FROM item_template as it
   WHERE it.class = 4
   AND it.InventoryType = InventoryType
   AND it.Material = Material
-  AND (it.entry IN (SELECT item FROM loot) OR it.entry IN (SELECT item FROM moreloot));
+  AND (it.entry IN (SELECT item FROM loot) OR it.entry IN (SELECT item FROM moreloot))
+  AND it.ItemLevel >= MinLevel
+  AND it.ItemLevel <= MaxLevel;
 END //
 DELIMITER ;
 
