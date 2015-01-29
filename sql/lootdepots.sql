@@ -62,6 +62,155 @@
 
 use world;
 
+
+
+DELIMITER //
+DROP PROCEDURE IF EXISTS lootDepots;
+CREATE PROCEDURE lootDepots
+(MinItemLevel int,
+ MaxItemLevel int,
+ CreatureId int)
+BEGIN
+
+-- 1: head
+CALL armorDrops(CreatureId, 1, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 1, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 1, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 1, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Head LootDepot", "Head Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+
+-- 3: shoulder
+CALL armorDrops(CreatureId, 3, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 3, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 3, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 3, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Shoulder LootDepot", "Shoulder Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+-- 5: chest
+CALL armorDrops(CreatureId, 5, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 5, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 5, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 5, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Chest LootDepot", "Chest Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+
+-- 6: waist
+CALL armorDrops(CreatureId, 6, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 6, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 6, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 6, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Waist LootDepot", "Waist Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+
+-- 7: legs
+CALL armorDrops(CreatureId, 7, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 7, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 7, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 7, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Legs LootDepot", "Legs Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+
+-- 8: feet
+CALL armorDrops(CreatureId, 8, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 8, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 8, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 8, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Feet LootDepot", "Feet Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+
+-- 9: wrists
+CALL armorDrops(CreatureId, 9, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 9, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 9, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 9, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Wrists LootDepot", "Wrists Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+SET CreatureId := CreatureId + 1;
+
+-- 10: hands
+CALL armorDrops(CreatureId, 10, 5, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 10, 6, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 10, 7, MinItemLevel, MaxItemLevel);
+CALL armorDrops(CreatureId, 10, 8, MinItemLevel, MaxItemLevel);
+
+-- TODO: need better way to handle creature level
+INSERT INTO creature_template (
+  entry, modelid1, name, subname, IconName, minlevel, maxlevel,
+  faction, lootid, mingold, maxgold, AIName, unit_class
+) VALUES (
+  CreatureId, 1337, "Hands LootDepot", "Hands Gear", "Attack", 28, 35,
+  18, CreatureId, 10, 10000, "AgressorAI", 1
+);
+
+END //
+DELIMITER ;
+
+CALL lootDepots(28, 33, 80050);
+
+
 -- level 28 - 33
 SET @CreatureMinLvl := 28;
 SET @CreatureMaxLvl := 35;

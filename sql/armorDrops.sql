@@ -1,6 +1,6 @@
-use world//
+use world;
 
-
+DELIMITER //
 DROP PROCEDURE IF EXISTS armorDrops;
 CREATE PROCEDURE armorDrops
 (CreatureId mediumint(8),
@@ -33,7 +33,5 @@ BEGIN
     AND it.ItemLevel <= MaxLevel
     GROUP BY it.entry;
 
-  -- TODO: would be nice if the name could be generated.. stuff like "Heady the Raptor"
-  -- for head, "Braces the Raptor" for bracers, etc.
-
 END //
+DELIMITER ;
