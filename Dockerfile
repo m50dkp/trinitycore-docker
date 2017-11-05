@@ -1,4 +1,4 @@
-FROM  debian:latest
+FROM  debian:9
 
 ENV TC_DIR     /usr/local/trinitycore
 ENV TC_REPO    git://github.com/TrinityCore/TrinityCore.git
@@ -7,31 +7,22 @@ ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && \
   apt-get install -y \
-  build-essential \
-  autoconf \
-  libtool \
+  git \
+  cmake \
+  make \
   gcc \
   g++ \
-  make \
-  cmake \
-  git-core \
-  wget \
-  p7zip-full \
-  libncurses5-dev \
-  openssl \
-  libssl-dev \
-  mysql-server \
-  mysql-client \
-  libmysqlclient15-dev \
-  libmysql++-dev \
-  libreadline6-dev \
-  zlib1g-dev \
+  libmariadbclient-dev \
+  libssl1.0-dev \
   libbz2-dev \
-  libboost-dev \
-  libboost-thread-dev \
-  libboost-system-dev \
-  libboost-filesystem-dev \
-  libboost-program-options-dev
+  libreadline-dev \
+  libncurses-dev \
+  libboost-all-dev \
+  mysql-server \
+  p7zip \
+  zlib1g \
+  zlib1g-dev \
+  libreadline-dev
 
 RUN mkdir -p $TC_DIR && \
   cd $TC_DIR && \
