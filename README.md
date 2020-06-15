@@ -1,14 +1,16 @@
 # trinitycore-docker
 
 
-See the [TrinityCore Installation Guide](http://collab.kpsn.org/display/tc/Installation+Guide) for useful
+See the [TrinityCore Installation Guide](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130077/Installation+Guide) for useful
 documentation on building TC from scratch.
 
-The debian packages installed in this `Dockerfile` come from [here](http://collab.kpsn.org/display/tc/Requirements).
+The debian packages installed in this `Dockerfile` come from [here](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/10977288/Linux+Requirements).
 
-The `build_core.sh` reflects the [Core Installation](http://collab.kpsn.org/display/tc/Core+Installation).
+The `build_core.sh` reflects the [Core Installation](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/10977309/Linux+Core+Installation).
 
 ## Build
+
+git clone this repository and once inside run the command to build the container.
 
 ```sh
 $ docker build -t trinitycore .
@@ -20,20 +22,14 @@ and running the resulting servers.
 
 ### data
 
-The data command creates a [data-only][] container. A data-only container can
-be used to persist and share data across multiple containers. This will be used
-for extracting maps and passing them to the `worldserver`.
-
-To create an empty data-only container run the following.
-
-```sh
-$ docker run --name my-data -it trinitycore data
+In order to persist data (and allow their backup), we will use docker volumes. We will need 3 of them 1 for the maps,
+ 1 for the database and 1 for the config file
+ 
+ ```
+docker volume create TC-maps
+docker volume create TC-config
+docker volume create TC-db
 ```
-
-Notice that container is started and immediately finishes executing. However,
-the container still exists, and can be seen with `docker ps -a`
-
-[data-only]: https://docs.docker.com/userguide/dockervolumes/#creating-and-mounting-a-data-volume-container
 
 ### extract-maps
 
@@ -41,61 +37,19 @@ the container still exists, and can be seen with `docker ps -a`
 
 The `extract_maps.sh` script expects the World of Warcraft (v3.3.5a) client
 directory to be mounted to `/opt/wow-client`. Maps are extracted to
-`/opt/trinitycore/maps`.
+`/usr/local/trinitycore/data`.
 
-The following is an example of extracting the maps and saving them to
-`~/WoW/ServerData` on the host machine. Assuming the WoW client is located at
+The following is an example of extracting the maps and saving them to the volume TC-maps. Assuming the WoW client is located at
 `~/WoW/WoW3.3.5a`,
 
 ```sh
-$ docker run --rm -it -v ~/WoW/WoW3.3.5a:/opt/wow-client -v ~/WoW/ServerData:/opt/trinitycore/maps trinitycore extract-maps
+$ docker run --rm -it -v ~/WoW/WoW3.3.5a:/opt/wow-client -v ~/WoW/ServerData:/usr/local/trinitycore/data trinitycore extract-maps
 ```
 
 We use the `--rm` option because the extracted maps are written to the host,
 thus the Docker container is no longer needed.
 
-Once the maps are extracted we can mount the maps from the host into a data-only
-container. The resulting container will be used by the `worldserver`.
-
-```sh
-$ docker create -it --name tc-maps -v ~/WoW/ServerData:/opt/trinitycore/maps trinitycore data
-```
-
-#### Advanced: Extracting maps into a Docker image
-
-It is possible to extract maps into a Docker image. This is useful if you
-plan on deploying to a remote server. Like before, assume the WoW client
-is located at `~/WoW/WoW3.3.5a`.
-
-```sh
-$ docker run --name map-container -it -v ~/WoW/WoW3.3.5a:/opt/wow-client trinitycore extract-maps
-```
-
-We do __not__ use the `--rm` option in this case because the maps are written
-into the Docker container's file system, not the host's. We also do not mount
-`~/WoW/ServerData` to `/opt/trinitycore/maps`. When the extraction is complete,
-the container will be stopped, but still exists. It can be found with
-
-```sh
-$ docker ps -a | grep map-container
-```
-
-Now the container can be committed into an image called `trinitycore-maps`.
-
-```sh
-$ docker commit map-container trinitycore-maps
-```
-
-After `map-container` is committed to an image, the container is not needed and
-can be safely deleted. The resulting image can be pushed to a Docker registry,
-and can be used to create data-only containers to use with `worldserver`.
-
-```sh
-$ docker run -it --name tc-maps -v /opt/trinitycore trinitycore-maps data
-```
-
-In this example we created a data-only container called `tc-maps` from the
-`trinitycore-maps` Docker image, and exposed `/opt/trinitycore` as an external volume that can later be included in _another_ container using `--volumes-from`.
+Once the maps are extracted to the volume, we can use it in the worldserver container.
 
 ### Updating permissions and Realm IP Address
 
@@ -121,9 +75,9 @@ The worldserver and authserver both depend on a database connection. Docker's `-
 
 It is assumed that the name of the running db container is `tc-dbserver`.
 
-The worldserver depends on the extracted maps accessible at `/opt/trinitycore/maps`. In the below examples, this volume is provided by a container named `tc-maps`.
-
-NOTE: in the following commands, the `-i` is very important when running in daemon mode. Without it, the servers will not actually start or will not later be accessible via interactive prompt using `docker attach`.
+The worldserver depends on the extracted maps accessible at `/usr/local/trinitycore/data`. In the below examples, this volume is provided by the volume we have created and populated above TC-maps.
+ 
+NOTE: in the following commands, the `-i` is very important when running in daemon mode. Without it, the servers will not actually start or will not later be accessible via interactive prompt using `docker exec`.
 
 ## Running the worldserver
 
@@ -139,7 +93,7 @@ NOTE: in the following commands, the `-i` is very important when running in daem
 The worldserver entry script in the trinitycore image will automatically copy over the default config into `/opt/trinitycore/conf/` if it does not exist.
 
 ```sh
-$ docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 --volumes-from tc-maps trinitycore worldserver
+$ docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
 ```
 
 ### Custom Configuration

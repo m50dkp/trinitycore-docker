@@ -3,10 +3,10 @@
 set -e
 
 # It is expected that /opt/wow-client and /opt/trinitycore-data are provided
-# via a mounted volume (-v, or --volumes-from) as part of `docker run`.
+# via a mounted volume (-v) as part of `docker run`.
 
 DIRS=(dbc maps mmaps vmaps Buildings)
-BIN=/usr/local/bin/
+BIN=/usr/local/trinitycore/bin
 
 cd $CLIENT_DIR
 

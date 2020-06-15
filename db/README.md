@@ -1,12 +1,9 @@
 # trinitycore database
 
-Builds and initializes a mysql docker container.
+Builds and initializes a mariadb sql docker container.
 
-See [this page](http://collab.kpsn.org/display/tc/Databases+Installation) for instructions on installing
+See [this page](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130092/Databases+Installation) for instructions on installing
 the TC database from scratch.
-
-This [repo](https://github.com/wblankenship/docker-TrinityCore/blob/master/build_db/build.sh) provides a
-decent database initialization script.
 
 The root Docker image comes from [this](https://registry.hub.docker.com/_/mariadb/) image. There are others
 and this was confusing at first.
@@ -19,45 +16,45 @@ This `Dockerfile` can be built independently from any other in this project.
 $ docker build -t trinitycore-db .
 ```
 
-Builds a mysql database image for TrinityCore. The resulting docker image has a
-custom entrypoint for executing various tasks and running the mysql database.
+Builds a mariadb database image for TrinityCore that contains the current create_sql script for 3.3.5
+Rather than create multiples entry point we will just copy the file and go inside the container to init it.
 
-### data
-
-The data command creates a [data-only][] container. A data-only container can
-be used to persist and share data across multiple containers. It is assumed you create a data-only container first before running anything else.
+## Run the db and init it once
 
 ```sh
-$ docker run --name tc-mysql-data trinitycore-db data
+$ docker run -d --name tc-dbserver --restart=always -v TC-db:/var/lib/mysql -e MYSQL_ROOT_PASSWORD=password trinitycore-db
 ```
 
-`tc-mysql-data` is now a container where all mysql data can persist.
+This will run the container and mark it for restart once your computer restart, else you will have to run this command each time.
 
-[data-only]: https://docs.docker.com/userguide/dockervolumes/#creating-and-mounting-a-data-volume-container
-
-### init
-
-Initializes mysql it with the base [TDB](http://collab.kpsn.org/display/tc/Databases+Installation).
+Once the container is started, we will attach to it and run the create script. 
 
 ```sh
-$ docker run --rm -ti --volumes-from tc-mysql-data -e MYSQL_ROOT_PASSWORD=password trinitycore-db init
+$ docker exec -it tc-dbserver /bin/bash
 ```
 
-### mysqld
-
-Starts the mysql database. Note the use of `--volumes-from` to pull in the persisted database data from the `tc-mysql-data` container, as well as the `-d` for daemon mode. The name used, `tc-dbserver`, will be used to later link this container to the world and auth servers.
+Once inside the container, run the following to init the db
 
 ```sh
-$ docker run -d --name tc-dbserver --volumes-from tc-mysql-data -e MYSQL_ROOT_PASSWORD=password trinitycore-db mysqld
+$ cd /etc/db/sql
+$ mysql -uroot -ppassword < create_mysql.sql
 ```
 
-## Acessing the database via `mysql` command
+This container will be accessed by the worldserver and authserver with the docker link command while the data will be persisted in the volume TC-db.
 
-The `mysqld` entrypoint command above does not expose the internal mysql port, 3306, to anything outside the docker container. This is a bit of a security measure, so that only another docker container can access mysql.
+Please refer to the docker documentation on how to back up the data.
 
-Here is an example of connecting with root credentials and executing a simple `SELECT` statement:
+### The little gift.
+
+If you have played Wow, you must know that the most annoying thing when you start without a higher level friend, 
+is the lack of bag space.
+So if you want to make it a little easier for you, once you have started the worldserver the first time, 
+come back to the db container with the exec command and run the following that will add a quest to the first questgiver
+for each race/faction.
+
+Special thanks to mfi for this little script.
 
 ```sh
-$ docker run --rm --link tc-dbserver:TCDB trinitycore-db mysql -hTCDB -uroot -ppassword -e 'select * from characters.characters;'
+$ cd /etc/db/sql
+$ mysql -uroot -ppassword < gift_bag.sql
 ```
-
