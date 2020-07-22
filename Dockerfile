@@ -36,7 +36,7 @@ RUN mkdir -p $TC_DIR && \
 
 ADD build_core.sh /etc/build_core.sh
 RUN chmod +x /etc/build_core.sh
-RUN /etc/build_core.sh && rm -rf $TC_DIR/TrinityCore
+RUN /etc/build_core.sh
 
 ADD extract_maps.sh /etc/extract_maps.sh
 RUN chmod +x /etc/extract_maps.sh
