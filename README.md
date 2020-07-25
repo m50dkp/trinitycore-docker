@@ -1,6 +1,8 @@
 # trinitycore-docker
 
 
+This repository is meant to install the 3.3.5 branch only.
+
 See the [TrinityCore Installation Guide](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130077/Installation+Guide) for useful
 documentation on building TC from scratch.
 
@@ -102,14 +104,17 @@ If you want the container to restart automatically, when you restart your PC/ser
 
 ### Updating the Realm IP Address
 
-As you will need the ip address of your container TC-worldserver we will use this command to get it from the host and pass it to the script.
+In order to allow other computer on the network to connect to the worldserver, you will need to set your host address in the reamlist table.
+You can get your address with shell command: 
 
 ```sh
-docker run --rm --link tc-dbserver:TCDB -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' tc-worldserver) trinitycore update-ip
+ip a
 ```
+and select the one corresponding to your address on your internal network (or your external IP if you want to allow from internet)
 
-If deploying to another server, it's likely you'll specify that server's address instead.
-
+```sh
+docker run --rm --link tc-dbserver:TCDB -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS=192.168.1.1 trinitycore update-ip
+```
 
 ## Running the authserver
 
@@ -122,10 +127,11 @@ If you want the container to restart automatically, when you restart your PC/ser
 
 ## Setting your client to connect to the authserver
 
-You will have to set the realmlist option in you config.wtf file to the value returned by the following command:
+You will have to set the realmlist option in you config.wtf file to the value you have used to update-ip:
 ```
-docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' tc-authserver
+ip a
 ```
+
 
 ## Default configuration file for world and auth servers
 
@@ -168,4 +174,6 @@ something like this that creates an account with user and password then give tha
 account create ralf wow5ever
 account set gmlevel ralf 3 -1
 ```
+/!\ This is the old way to set privileges. Please note it will be deprecated in the future version of TC.
+
 `ctrl + c` to detach from the process while keeping `worldserver` running in the background.
