@@ -95,7 +95,8 @@ then
   echo '      Runs a script to extract maps, mmaps, vmaps, and dbc from the'
   echo '      client. The script assumes that the client is version 3.3.5a'
   echo '      and that the client is mounted at point /opt/wow-client/'
-  echo '      if your local install is somewhere else, you can just ln -s /opt/wow-client/ /some/where/to/your/install/Wow3.3.5Client'
+  echo '      hint: use `-v /some/where/to/your/install/Wow3.3.5Client:/opt/wow-client`'
+  echo '      when invoking this script.'
   echo ""
   echo '  help'
   echo '      Displays this help command. But I guess runs this container'
