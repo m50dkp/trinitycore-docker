@@ -47,7 +47,7 @@ The following is an example of extracting the maps and saving them to the volume
 `~/WoW/WoW3.3.5a`,
 
 ```sh
-docker run --rm -it -v ~/WoW/WorldofWarcraft-3.3.5:/opt/wow-client -v TC-maps:/opt/trinitycore/maps trinitycore extract-maps
+docker run --rm -it -v ~/WoW/WoW3.3.5a:/opt/wow-client -v TC-maps:/opt/trinitycore/maps trinitycore extract-maps
 ```
 
 We use the `--rm` option because the extracted maps are written to the host,
