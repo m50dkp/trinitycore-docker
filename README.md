@@ -81,7 +81,7 @@ via interactive prompt using `docker exec`.
 As the worldserver will ask if we want to create the database the first time (even with the worldserver.conf Updates section enabled), we will need to connect in interactive mode.
 
 ```sh
-docker run --name tc-worldserverinit --rm -it --link tc-dbserver:TCDB -p 8085:8085 -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
+docker run --rm -it --link tc-dbserver:TCDB -p 8085:8085 -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
 ```
 
 
