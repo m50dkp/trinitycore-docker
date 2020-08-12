@@ -32,7 +32,7 @@ RUN update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
 
 RUN mkdir -p $TC_DIR && \
   cd $TC_DIR && \
-  git clone -b 3.3.5 $TC_REPO
+  git clone -b 3.3.5 --depth 1 $TC_REPO
 
 ADD build_core.sh /etc/build_core.sh
 RUN chmod +x /etc/build_core.sh
