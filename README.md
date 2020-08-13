@@ -80,27 +80,17 @@ via interactive prompt using `docker exec`.
 
 As the worldserver will ask if we want to create the database the first time (even with the worldserver.conf Updates section enabled), we will need to connect in interactive mode.
 
-```sh
-docker run --rm -it --link tc-dbserver:TCDB -p 8085:8085 -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
-```
+The TRINITY_PWD env variable is passed to the container to initialize the config file.
 
+```sh
+docker run --rm -it --link tc-dbserver:TCDB -p 8085:8085 -e TRINITY_PWD=mysecurepassword -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
+```
 
 Once the initialization is done, you can CTRL+C to stop the worldserver and remove the container (thanks to the --rm option).
 
 This step will either copy the default worldserver.conf to a location corresponding to the TC-config volume or re-use the one already there.
 Once the database is created, you can access the worldserver.conf from your volume and modify it to suit your needs 
 (under linux the file will be under /var/lib/docket/volumes/TC-config/_data).
-
-
-## Running the worldserver once initialization is done.
-
-```sh
-docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
-```
-
-This will make the worldserver runs in the background.
-
-If you want the container to restart automatically, when you restart your PC/server, just add the option --restart=always
 
 ### Updating the Realm IP Address
 
@@ -116,10 +106,22 @@ and select the one corresponding to your address on your internal network (or yo
 docker run --rm --link tc-dbserver:TCDB -e MYSQL_ROOT_PASSWORD=password -e USER_IP_ADDRESS=192.168.1.1 trinitycore update-ip
 ```
 
+
+## Running the worldserver once initialization is done.
+
+```sh
+docker run --name tc-worldserver -i -d --link tc-dbserver:TCDB -p 8085:8085 -v TC-maps:/usr/local/trinitycore/data -v TC-config:/usr/local/trinitycore/etc trinitycore worldserver
+```
+
+This will make the worldserver runs in the background.
+
+If you want the container to restart automatically, when you restart your PC/server, just add the option --restart=always
+
+
 ## Running the authserver
 
 ```sh
-docker run --name tc-authserver -i -d --link tc-dbserver:TCDB -p 3724:3724 -v TC-config:/usr/local/trinitycore/etc trinitycore authserver
+docker run --name tc-authserver -i -d --link tc-dbserver:TCDB -e TRINITY_PWD=mysecurepassword -p 3724:3724 -v TC-config:/usr/local/trinitycore/etc trinitycore authserver
 ```
 
 This will run the authserver in daemon mode and either copy the default authserver.conf file to the TC-config container or use the one already present in it.

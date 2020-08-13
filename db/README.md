@@ -47,6 +47,8 @@ mysql -uroot -ppassword < create_mysql.sql
 
 This container will be accessed by the worldserver and authserver with the docker link command while the data will be persisted in the volume TC-db.
 
+The mysecurepassword will be used in the worldserver container to set the correct password in the config files.
+
 Please refer to the docker documentation on how to back up the data.
 
 ### The little gift.

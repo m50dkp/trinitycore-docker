@@ -31,12 +31,14 @@ then
     exit 1
   fi
 
-  # use the linked
-  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" $CONF_DIR/worldserver.conf
-  sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;world\"/" $CONF_DIR/worldserver.conf
-  sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;characters\"/" $CONF_DIR/worldserver.conf
-  sed -i "s%DataDir.*$%DataDir = \"$MAPS_DIR\"%" $CONF_DIR/worldserver.conf
-  sed -i "s%BuildDirectory.*$%BuildDirectory = \"../TrinityCore\"%" $CONF_DIR/worldserver.conf
+  if [ -n "$TRINITY_PWD" ]; then
+    # If this var is set we are in init mode
+    sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;$TRINITY_PWD;auth\"/" $CONF_DIR/worldserver.conf
+    sed -i "s/WorldDatabaseInfo.*$/WorldDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;$TRINITY_PWD;world\"/" $CONF_DIR/worldserver.conf
+    sed -i "s/CharacterDatabaseInfo.*$/CharacterDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;$TRINITY_PWD;characters\"/" $CONF_DIR/worldserver.conf
+    sed -i "s%DataDir.*$%DataDir = \"$MAPS_DIR\"%" $CONF_DIR/worldserver.conf
+    sed -i "s%BuildDirectory.*$%BuildDirectory = \"../TrinityCore\"%" $CONF_DIR/worldserver.conf
+  fi
 
   # RUN. IT.
   cd /usr/local/trinitycore/bin/
@@ -64,7 +66,7 @@ then
   fi
 
   # update the config file with the linked db container address/port
-  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;trinity;auth\"/" $CONF_DIR/authserver.conf
+  sed -i "s/LoginDatabaseInfo.*$/LoginDatabaseInfo = \"$TCDB_PORT_3306_TCP_ADDR;$TCDB_PORT_3306_TCP_PORT;trinity;$TRINITY_PWD;auth\"/" $CONF_DIR/authserver.conf
 
   # RUN. IT.
   /usr/local/trinitycore/bin/authserver -c $CONF_DIR/authserver.conf
