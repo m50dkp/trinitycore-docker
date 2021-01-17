@@ -1,0 +1,51 @@
+version: "3.7"
+
+services:
+
+  # accessible at //trinitycore-db:3306 inside the swarm
+  trinitycore-db:
+    image: mariadb:10.5
+    restart: always
+    volumes:
+      - ./containerfs:/hostfs:cached
+      # store database outside the container
+      - ./containerfs/tc-db/mysql:/var/lib/mysql:cached
+      # mariadb image will load all *.sql files on first boot
+      - ./containerfs/tc-server/source/sql/create/create_mysql.sql:/docker-entrypoint-initdb.d/create_mysql.sql
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: security-through-subnets
+  
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+  trinitycore-worldserver:
+    image: tc-builder
+    command: /hostfs/tc-server/dist/bin/worldserver
+    working_dir: /hostfs
+    volumes:
+      - ./containerfs:/hostfs:cached 
+      # pass custom config into expected location for trinitycore
+      - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
+      # Link in maps to default location (datadir = . in worldserver.conf)
+      - ./containerfs/tc-extraction/dbc:/hostfs/tc-server/dist/bin/dbc
+      - ./containerfs/tc-extraction/maps:/hostfs/tc-server/dist/bin/maps
+      - ./containerfs/tc-extraction/mmaps:/hostfs/tc-server/dist/bin/mmaps
+      - ./containerfs/tc-extraction/vmaps:/hostfs/tc-server/dist/bin/vmaps
+    ports:
+      - 8085:8085
+
+  trinitycore-authserver:
+    image: tc-builder
+    command: /hostfs/tc-server/dist/bin/authserver
+    working_dir: /hostfs
+    volumes:
+      - ./containerfs:/hostfs:cached 
+      # pass custom config into expected location for trinitycore
+      - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
+    ports:
+      - 3724:3724

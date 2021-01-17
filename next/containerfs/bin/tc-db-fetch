@@ -1,0 +1,22 @@
+#!/bin/bash
+
+set -euo pipefail
+set -x
+
+TC_RELEASES_URL="https://github.com/TrinityCore/TrinityCore/releases"
+
+# Extract the DB Version from the source code
+DB_VERSION=$(grep -o -E '(TDB_full[^"]+)' /hostfs/tc-server/source/revision_data.h.in.cmake)
+BUILD_NUM=$(node -p "'"$DB_VERSION"'.match(/(335\.[0-9]+)/)[1]")
+
+cd /hostfs/tc-db/
+
+# Download and Extract
+rm -rf *.7z *.sql
+curl -L -O "$TC_RELEASES_URL/download/TDB$BUILD_NUM/${DB_VERSION%.*}.7z"
+7z x *.7z
+rm *.7z
+
+# Needs to be relative to worldserver bin, apparently.
+# https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130092/Databases+Installation
+mv -f *.sql /hostfs/tc-server/dist/bin/

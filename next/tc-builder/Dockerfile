@@ -16,7 +16,7 @@ RUN apt-get update \
   libncurses-dev \
   libboost-all-dev \
   mariadb-server \
-  p7zip \
+  p7zip-full \
   default-libmysqlclient-dev \
   && update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
   && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
