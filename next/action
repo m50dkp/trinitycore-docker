@@ -1,0 +1,18 @@
+#!/bin/bash
+
+# build if necessary
+{
+  docker image inspect tc-builder:latest &> /dev/null
+} || {
+  # Copy and paste this command to rebuild
+  docker build -f tc-builder/Dockerfile -t tc-builder:latest .
+}
+
+# TODO: could also include `v $(PWD):$(PWD):cached -w $(PWD)` but that might encourage bad patterns
+docker run \
+  -it \
+  --rm \
+  -v $(PWD)/containerfs/:/hostfs/:cached \
+  -w /hostfs \
+  tc-builder:latest \
+  "$@"

@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -euo pipefail
+set -x
+
+# Docker on mac is fairly slow for read-intensive jobs like compilation. Copy
+# the source tree in, compile, then install to the external.
+rsync -avr /hostfs/tc-server/source/ /tc-server-source
+
+cd /tc-server-source
+mkdir -p build
+cd build
+cmake ../ -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
+make -j $(nproc)
+make install
+
+# Bring the build files back out to aid a rebuild.
+rsync -avr /tc-server-source/build/ /hostfs/tc-server/source/build

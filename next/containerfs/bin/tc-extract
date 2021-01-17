@@ -1,0 +1,48 @@
+#!/bin/bash
+
+set -euo pipefail
+set -x
+
+function cleanup() {
+  DIRS=(dbc maps mmaps vmaps Buildings)
+
+  # kill existings directories if they exist
+  for d in ${DIRS[@]}
+  do
+    if [ -d "$d" ]
+    then
+      echo "Removing directory $d"
+      rm -r "$d"
+    fi
+  done
+}
+
+CLIENT_DIR="$1"
+
+if [ -z ${CLIENT_DIR:-} ]; then
+  echo CLIENT_DIR positional argument not set!
+  echo Example: ./action tc-extract "/hostfs/tc-extraction/World\ of\ Warcraft\ 3.3.5a/"
+  exit 1;
+fi
+
+cd "$CLIENT_DIR";
+
+cleanup
+
+# dbc, maps
+/hostfs/tc-server/dist/bin/mapextractor -f 0
+
+# vmaps
+/hostfs/tc-server/dist/bin/vmap4extractor
+mkdir vmaps
+/hostfs/tc-server/dist/bin/vmap4assembler Buildings vmaps
+
+# mmaps
+mkdir mmaps
+/hostfs/tc-server/dist/bin/mmaps_generator
+
+# Copy to server location
+cp -r dbc maps mmaps vmaps /hostfs/tc-extraction/
+# TODO: may need to be /hostfs/tc-server/dist/data/
+
+cleanup
