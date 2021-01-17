@@ -4,3 +4,4 @@
 /next/containerfs/tc-extraction/
 /next/containerfs/tc-db/mysql
 /next/containerfs/tc-wd
+/next/containerfs/tc-conf/*.dist
