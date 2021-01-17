@@ -42,7 +42,6 @@ mkdir mmaps
 /hostfs/tc-server/dist/bin/mmaps_generator
 
 # Copy to server location
-cp -r dbc maps mmaps vmaps /hostfs/tc-extraction/
-# TODO: may need to be /hostfs/tc-server/dist/data/
+cp -r dbc maps mmaps vmaps /hostfs/tc-wd/
 
 cleanup

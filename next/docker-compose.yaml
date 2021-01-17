@@ -1,7 +1,6 @@
 version: "3.7"
 
 services:
-
   # accessible at //trinitycore-db:3306 inside the swarm
   trinitycore-db:
     image: mariadb:10.5
@@ -17,7 +16,7 @@ services:
       - 3306
     environment:
       MYSQL_ROOT_PASSWORD: security-through-subnets
-  
+
   adminer:
     image: adminer
     restart: always
@@ -29,14 +28,9 @@ services:
     command: /bin/sh -c 'wait-port trinitycore-db:3306 && /hostfs/tc-server/dist/bin/worldserver'
     working_dir: /hostfs/tc-wd
     volumes:
-      - ./containerfs:/hostfs:cached 
+      - ./containerfs:/hostfs:cached
       # pass custom config into expected location for trinitycore
       - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
-      # Link in maps to default location (datadir = . in worldserver.conf)
-      - ./containerfs/tc-extraction/dbc:/hostfs/tc-wd/dbc
-      - ./containerfs/tc-extraction/maps:/hostfs/tc-wd/maps
-      - ./containerfs/tc-extraction/mmaps:/hostfs/tc-wd/mmaps
-      - ./containerfs/tc-extraction/vmaps:/hostfs/tc-wd/vmaps
     ports:
       - 8085:8085
 
@@ -45,7 +39,7 @@ services:
     command: /bin/sh -c 'wait-port trinitycore-db:3306 && /hostfs/tc-server/dist/bin/authserver'
     working_dir: /hostfs/tc-wd
     volumes:
-      - ./containerfs:/hostfs:cached 
+      - ./containerfs:/hostfs:cached
       # pass custom config into expected location for trinitycore
       - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
     ports:
