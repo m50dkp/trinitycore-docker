@@ -21,6 +21,8 @@ RUN apt-get update \
   && update-alternatives --install /usr/bin/cc cc /usr/bin/clang 100 \
   && update-alternatives --install /usr/bin/c++ c++ /usr/bin/clang 100
 
+RUN npm install -g wait-port
+
 # Reasonable defaults
 ENV PATH="/hostfs/bin:$PATH"
 WORKDIR /hostfs

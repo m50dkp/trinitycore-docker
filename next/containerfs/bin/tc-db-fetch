@@ -19,4 +19,4 @@ rm *.7z
 
 # Needs to be relative to worldserver bin, apparently.
 # https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130092/Databases+Installation
-mv -f *.sql /hostfs/tc-server/dist/bin/
+mv -f *.sql /hostfs/tc-wd

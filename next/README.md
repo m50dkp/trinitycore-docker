@@ -14,11 +14,13 @@ cp -r path/to/installed/WoW3.3.5a ./containerfs/tc-extraction/
 
 Modify /containerfs/tc-conf/*.conf files if you'd like
 
-Boot
+Boot (first time)
 
 ```sh
-docker-compose up -d
+docker-compose up
 ```
+
+First boot, the database container will start a temporary server to self-initialize. This takes time. After initialization, mysqld will will restart and be accessible, allowing the other services to start.
 
 Shutdown
 
@@ -32,3 +34,8 @@ Questions / TODO
 
 - [ ] Update passwords / networking in *.conf
 - [ ] Need to have some sort of update-ip command still https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections
+
+
+Notes:
+
+To start from scratch with the database: `rm -rf /containerfs/tc-db/mysql`

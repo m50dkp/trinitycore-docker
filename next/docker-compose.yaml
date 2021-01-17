@@ -11,7 +11,8 @@ services:
       # store database outside the container
       - ./containerfs/tc-db/mysql:/var/lib/mysql:cached
       # mariadb image will load all *.sql files on first boot
-      - ./containerfs/tc-server/source/sql/create/create_mysql.sql:/docker-entrypoint-initdb.d/create_mysql.sql
+      - ./containerfs/tc-server/source/sql/create/create_mysql.sql:/docker-entrypoint-initdb.d/000_create_mysql.sql
+      - ./containerfs/tc-db/grants.sql:/docker-entrypoint-initdb.d/001_grants.sql
     ports:
       - 3306
     environment:
@@ -25,8 +26,8 @@ services:
 
   trinitycore-worldserver:
     image: tc-builder
-    command: /hostfs/tc-server/dist/bin/worldserver
-    working_dir: /hostfs
+    command: /bin/sh -c 'wait-port trinitycore-db:3306 && /hostfs/tc-server/dist/bin/worldserver'
+    working_dir: /hostfs/tc-wd
     volumes:
       - ./containerfs:/hostfs:cached 
       # pass custom config into expected location for trinitycore
@@ -41,8 +42,8 @@ services:
 
   trinitycore-authserver:
     image: tc-builder
-    command: /hostfs/tc-server/dist/bin/authserver
-    working_dir: /hostfs
+    command: /bin/sh -c 'wait-port trinitycore-db:3306 && /hostfs/tc-server/dist/bin/authserver'
+    working_dir: /hostfs/tc-wd
     volumes:
       - ./containerfs:/hostfs:cached 
       # pass custom config into expected location for trinitycore
