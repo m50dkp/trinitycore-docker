@@ -16,3 +16,6 @@ make install
 
 # Bring the build files back out to aid a rebuild.
 rsync -avr /tc-server-source/build/ /hostfs/tc-server/source/build
+
+# copy out the conf files for easy comparison
+rsync -avr /tc-server/dist/etc/* /hostfs/tc-conf/
