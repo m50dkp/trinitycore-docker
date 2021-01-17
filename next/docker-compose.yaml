@@ -33,10 +33,10 @@ services:
       # pass custom config into expected location for trinitycore
       - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
       # Link in maps to default location (datadir = . in worldserver.conf)
-      - ./containerfs/tc-extraction/dbc:/hostfs/tc-server/dist/bin/dbc
-      - ./containerfs/tc-extraction/maps:/hostfs/tc-server/dist/bin/maps
-      - ./containerfs/tc-extraction/mmaps:/hostfs/tc-server/dist/bin/mmaps
-      - ./containerfs/tc-extraction/vmaps:/hostfs/tc-server/dist/bin/vmaps
+      - ./containerfs/tc-extraction/dbc:/hostfs/tc-wd/dbc
+      - ./containerfs/tc-extraction/maps:/hostfs/tc-wd/maps
+      - ./containerfs/tc-extraction/mmaps:/hostfs/tc-wd/mmaps
+      - ./containerfs/tc-extraction/vmaps:/hostfs/tc-wd/vmaps
     ports:
       - 8085:8085
 
