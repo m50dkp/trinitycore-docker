@@ -53,7 +53,14 @@ Set your client's WoW-3.3.5a/Data/enUS/realmlist.wtf:
 set realmlist localhost
 ```
 
-And start your client! On mac, you may have to [directly run the executable to work around an "Failed to open archive interface.MPQ" error](https://sunwell-community.com/topic/106-failed-to-open-archive-interfacempq/?do=findComment&comment=26973):
+And start your client! If you have an older mac still capable of running the client, you may need to remove the "quarantine" attribute to avoid "Failed to open archive interface.MPQ" errors:
+
+```sh
+cd /path/to/WoW-3.3.5a
+xattr -r -d com.apple.quarantine *
+```
+
+An alternative workaround is to run the macos binary directly:
 
 ```sh
 ./path/to/WoW-3.3.5a/World\ of\ Warcraft/Contents/MacOS/World\ of\ Warcraft
