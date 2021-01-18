@@ -96,6 +96,7 @@ Questions / TODO
 - [x] Update passwords / networking in *.conf
 - ~[ ] Need to have some sort of update-ip command still https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections~
 - [ ] Add a "how this works" overview
+- [ ] Add a "how to update the code" section
 - [x] Add a "accessing the db" section (adminer?)
 - [x] Test a real client
 - [x] Have a better pattern for passing the client in for extraction
