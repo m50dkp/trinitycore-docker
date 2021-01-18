@@ -65,15 +65,32 @@ Shutdown
 docker-compose down
 ```
 
+Manual DB Changes (such as https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections)
+
+[adminer](https://hub.docker.com/_/adminer) (aka phpMyAdmin) is included as a container. Using it requires the following:
+
+1. Visit http://localhost:8080/?server=trinitycore-db&username=root . Note: trinitycore-db is the service name within the docker cluster, so that services within can discover each other.
+1. Use your root password as specified in [docker-compose.yaml](./docker-compose.yaml).
+1. Do whatever you need to do, like update your realmlist address with your client-accessible IP address:
+
+```sql
+use auth;
+UPDATE realmlist
+set 
+  address='127.0.0.1'
+  /*, localAddress='${USER_IP_ADDRESS}'*/
+WHERE name='Trinity';
+```
+
 Questions / TODO
 
 - [ ] containerfs vs hostfs. "containerfs" generally means "these folders will be docker `COPY`-ied to the root of the container. I'm doing the opposite, since I'm not `COPY`, I'm mounting as a bind volume
 
 - [x] Update passwords / networking in *.conf
-- [ ] Need to have some sort of update-ip command still https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections
+- ~[ ] Need to have some sort of update-ip command still https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections~
 - [ ] Add a "how this works" overview
-- [ ] Add a "accessing the db" section (adminer?)
-- [ ] Test a real client
+- [x] Add a "accessing the db" section (adminer?)
+- [x] Test a real client
 - [x] Have a better pattern for passing the client in for extraction
 
 
