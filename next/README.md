@@ -7,9 +7,10 @@ Initial Setup
 ./action tc-build
 ./action tc-db-fetch
 
-cp -r path/to/installed/WoW3.3.5a ./containerfs/tc-extraction/
-./action tc-extract "/hostfs/tc-extraction/WoW3.3.5a"
-
+# Extract maps, this will take hours.
+# Make sure CLIENT_DIR is the absolute path to your WoW client! You'll get a
+# docker error otherwise.
+CLIENT_DIR=/absolutepath/to/installed/WoW3.3.5a ./action tc-extract
 ```
 
 Modify /containerfs/tc-conf/*.conf files if you'd like
@@ -43,6 +44,7 @@ Questions / TODO
 - [ ] Add a "how this works" overview
 - [ ] Add a "accessing the db" section (adminer?)
 - [ ] Test a real client
+- [x] Have a better pattern for passing the client in for extraction
 
 
 Notes:

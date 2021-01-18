@@ -17,13 +17,14 @@ function cleanup() {
   done
 }
 
-CLIENT_DIR="$1"
+CLIENT_DIR=/hostfs/tc-client
 
-if [ -z ${CLIENT_DIR:-} ]; then
-  echo CLIENT_DIR positional argument not set!
-  echo Example: ./action tc-extract "/hostfs/tc-extraction/World\ of\ Warcraft\ 3.3.5a/"
+[[ ! -d "$CLIENT_DIR" ]] || [[ -z `ls -A "$CLIENT_DIR"` ]] && {
+  echo "$CLIENT_DIR is empty or non existant"
+  echo "Set CLIENT_DIR before running ./action tc-extract"
+  echo 'Example: CLIENT_DIR=/absolute/path/to/WoW-3.3.5a ./action tc-extract'
   exit 1;
-fi
+}
 
 cd "$CLIENT_DIR";
 
