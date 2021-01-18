@@ -27,7 +27,37 @@ First boot, the database container will start a temporary server to self-initial
 docker-compose up -d
 ```
 
+Running worldserver commands:
 
+```sh
+docker ps | grep worldserver
+# take the name or container id and put it below
+# generally will be "trinitycore-worldserver_1"
+docker attach CONTAINER_NAME_OR_ID
+# at worldserver prompt
+TC>
+# DO NOT CTRL+C, unless you want the worldserver to restart!
+# Detatch let leave it running with: CTRL-p CTRL-q
+```
+
+Useful worldserver commands:
+
+```sh
+account create <user> <pass>
+account set gmlevel <user> 3 -1 # give user GM power on all realms
+```
+
+Set your client's WoW-3.3.5a/Data/enUS/realmlist.wtf:
+
+```sh
+set realmlist localhost
+```
+
+And start your client! On mac, you may have to [directly run the executable to work around an "Failed to open archive interface.MPQ" error](https://sunwell-community.com/topic/106-failed-to-open-archive-interfacempq/?do=findComment&comment=26973):
+
+```sh
+./path/to/WoW-3.3.5a/World\ of\ Warcraft/Contents/MacOS/World\ of\ Warcraft
+```
 
 Shutdown
 
