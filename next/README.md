@@ -228,7 +228,7 @@ docker-compose exec trinitycore-db mysql -uroot -psecurity-through-subnets
 Updating the Server
 -------------------
 
-To save space (TrinityCore repo is > 6GB!), the `tc-fetch` action does a shallow clone. You can run `./action tc-fetch` again to always grab the latest tagged (aka official) release of the `3.3.5` branch.
+To save space (TrinityCore repo is > 6GB!), the `tc-fetch` action does a filtered clone. TrinityCore releases use tags. You can run `./action tc-fetch` again to always grab the latest tagged (aka official) release of the `3.3.5` branch.
 
 ```sh
 ./action tc-fetch
@@ -238,8 +238,8 @@ To save space (TrinityCore repo is > 6GB!), the `tc-fetch` action does a shallow
 You can also do it manually, if you'd like to have the full repo or a specific commit:
 
 ```sh
-git -C containerfs/tc-server/source fetch origin
-git -C containerfs/tc-server/source reset --hard origin/3.3.5 # or whatever tag/release you'd like
+git -C containerfs/tc-server/source fetch
+git -C containerfs/tc-server/source checkout 3.3.5 # or whatever branch/tag/release you'd like
 ./action tc-build
 ```
 
