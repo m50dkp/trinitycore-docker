@@ -5,7 +5,11 @@ set -x
 
 # Docker on mac is fairly slow for read-intensive jobs like compilation. Copy
 # the source tree in, compile, then install to the external.
-rsync -W -arh --info=progress2 /hostfs/tc-server/source/ /tc-server-source
+rsync \
+  --compress-level=0 \
+  -arhW \
+  --info=progress2 \
+  /hostfs/tc-server/source/ /tc-server-source
 
 cd /tc-server-source
 
@@ -16,7 +20,15 @@ make -j $(nproc)
 make install
 
 # Bring the build files back out to aid a rebuild.
-rsync -W -arh --info=progress2 /tc-server-source/build/ /hostfs/tc-server/source/build
+rsync \
+  --compress-level=0 \
+  -arhW \
+  --info=progress2 \
+  /tc-server-source/build/ /hostfs/tc-server/source/build
 
 # copy out the conf files for easy comparison
-rsync -W -arh --info=progress2 /tc-server-source/dist/etc/* /hostfs/tc-conf/
+rsync \
+  --compress-level=0 \
+  -arhW \
+  --info=progress2 \
+  /hostfs/tc-server/dist/etc/* /hostfs/tc-conf/
