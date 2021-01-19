@@ -39,7 +39,7 @@ Therefore, although Docker is being used, all config files, the database, source
 #### General
 
 - `/containerfs`: this folder will be mounted into the action container as `/hostfs`. One way to think about this is that when the docker container is running, reading/ a file in `/hostfs/*` is like reading a file on the system hosting docker.
-- `/action`: A bash script that builds and executes the action container built from `/tc-builder`.
+- `/action`: A bash script that builds and executes the action container from `/tc-builder`.
 
 #### Containerfs Details
 
@@ -85,7 +85,7 @@ diff -u containerfs/tc-server/dist/etc/authserver.conf.dist containerfs/tc-conf/
 diff -u containerfs/tc-server/dist/etc/worldserver.conf.dist containerfs/tc-conf/worldserver.conf
 ```
 
-Feel free to modify /containerfs/tc-conf/*.conf files as you see fit, but it's recommended to first get everything working with the repo as is before you begin heavy customization.
+Feel free to modify `/containerfs/tc-conf/*.conf` files as you see fit, but it's recommended to first get everything working with the repo as-is before you begin heavy customization.
 
 Server Start / Boot
 -------------------
@@ -222,33 +222,39 @@ docker-compose exec trinitycore-db mysql -uroot -psecurity-through-subnets
 1. Uncomment the service declaration in [docker-compose.yaml](./docker-compose.yaml) (it's commented out since it allows anyone with your IP address and root password to edit the database).
 1. Visit http://localhost:8080/?server=trinitycore-db&username=root . Note: trinitycore-db is the service name within the docker cluster, so that services within can discover each other.
 1. Use your root password as specified in [docker-compose.yaml](./docker-compose.yaml).
-1. Do whatever you need to do, like update your realmlist address with your client-accessible IP address:
+1. Do whatever you need to do, like update your realmlist address with your client-accessible IP address.
 
 
 Updating the Server
 -------------------
 
-To save space (TrinityCore repo is > 6GB!), the `tc-fetch` action does a shallow clone. You can run `./action tc-fetch` again to always grab the latest tagged release of the `3.3.5` branch. You can also do it manually, if you'd like to have the full repo or a specific commit:
+To save space (TrinityCore repo is > 6GB!), the `tc-fetch` action does a shallow clone. You can run `./action tc-fetch` again to always grab the latest tagged (aka official) release of the `3.3.5` branch.
 
 ```sh
-git fetch origin
-git reset --hard origin/3.3.5 # or whatever tag/release you'd like
-```
-
-Then rebuild the server:
-
-```sh
-# optional, only if you want a completely clean build (usually not necessary):
-git clean -dfx
-
-# build
+./action tc-fetch
 ./action tc-build
 ```
+
+You can also do it manually, if you'd like to have the full repo or a specific commit:
+
+```sh
+git -C containerfs/tc-server/source fetch origin
+git -C containerfs/tc-server/source reset --hard origin/3.3.5 # or whatever tag/release you'd like
+./action tc-build
+```
+
+You can perform a clean build via:
+
+```sh
+git -C containerfs/tc-server/source clean -dfx
+./action tc-build
+```
+
 
 Starting from Scratch
 ---------------------
 
-The only truly unique information is due to the database, so generally you only need:
+The only truly unique information is in the database, so generally you only need:
 
 ```sh
 # delete the database
@@ -271,4 +277,4 @@ Contributing
 
 Any contributions are welcome, as long as they keep this project within scope: simplicity, ease of maintenance, and ease of use.
 
-Additionally, please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+Additionally, please note that this project is released with a [Contributor Code of Conduct](./CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms.
