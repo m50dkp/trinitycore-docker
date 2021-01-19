@@ -1,6 +1,8 @@
 trinitycore-docker
 ==================
 
+[![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-v2.0%20adopted-ff69b4.svg)](CODE_OF_CONDUCT.md) 
+
 [TrinityCore](https://github.com/TrinityCore/TrinityCore#introduction) is an MMORPG Framework. This project Dockerizes its various components using docker-compose to reduce as much complexity as possible. All you need is Docker and a copy of the 3.3.5a WoW client (any platform).
 
 Quickstart / Example
@@ -264,3 +266,9 @@ rm -rf containerfs/tc-server/{dist,source}
 rm -rf containerfs/tc-wd/*
 ```
 
+Contributing
+------------
+
+Any contributions are welcome, as long as they keep this project within scope: simplicity, ease of maintenance, and ease of use.
+
+Additionally, please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
