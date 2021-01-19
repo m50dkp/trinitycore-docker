@@ -14,17 +14,22 @@ LATEST_RELEASE_TAG=$( \
     | jq -r '[.[].tag_name | select(test("TDB335"))] | first' \
 )
 
+# Cloning via --filter=tree:0 results in significantly less disk space used, and
+# is generally faster. See
+# https://github.blog/2020-12-21-get-up-to-speed-with-partial-clone-and-shallow-clone/
+# for more details. Note: --filter=tree:0 was generally faster on the operations
+# needed here and smaller repo size than --filter=blob:none.
+
 [ -d "/hostfs/tc-server/source/.git" ] && {
-  # Update if it exists, keeping it shallow
-  # https://stackoverflow.com/a/41081908
+  # Update if repo exists
   cd /hostfs/tc-server/source
-  git fetch --tags --depth 1
-  git reset --hard $LATEST_RELEASE_TAG
+  git fetch --tags
+  git checkout $LATEST_RELEASE_TAG
   exit 0
 } || {
   # Clone if fresh
   git clone \
-    --depth 1 \
+    --filter=tree:0 \
     -b $LATEST_RELEASE_TAG \
     git://github.com/TrinityCore/TrinityCore.git \
     /hostfs/tc-server/source

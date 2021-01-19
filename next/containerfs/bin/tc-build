@@ -18,4 +18,4 @@ make install
 rsync -avr /tc-server-source/build/ /hostfs/tc-server/source/build
 
 # copy out the conf files for easy comparison
-rsync -avr /tc-server/dist/etc/* /hostfs/tc-conf/
+rsync -avr /tc-server-source/dist/etc/* /hostfs/tc-conf/
