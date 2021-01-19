@@ -1,10 +1,69 @@
+trinitycore-docker
+==================
 
+[TrinityCore](https://github.com/TrinityCore/TrinityCore#introduction) is an MMORPG Framework. This project Dockerizes its various components using docker-compose to reduce as much complexity as possible. All you need is Docker and a copy of the 3.3.5a WoW client (any platform).
 
-Initial Setup
+Quickstart / Example
+--------------------
 
 ```sh
-./action tc-clone
+./action tc-fetch
 ./action tc-build
+./action tc-db-fetch
+CLIENT_DIR=/absolutepath/to/installed/WoW3.3.5a ./action tc-extract
+docker-compose up
+```
+
+See [Initial Setup](#initial-setup) for more details.
+
+Overview
+--------
+
+You should be able to skip this section completely, and go directly to `Initial Setup`. But if would like more info about this repo and its structure, read on.
+
+A few principles behind the approach this repo takes:
+
+1. As simple as possible: reduce configuration, reduce code, reduce implicit structures and coupling between scripts. The fewer things that can be configured, and the less code you have, the more maintainable a system is.
+1. Limited scope: this is for you and your friends to setup and play, not for a production-scale deployment. It should be as straightforward to run and debug as possible. This means some things are not configurable automatically, such as passwords.
+
+### The `action` Command
+
+This project uses an "action container" or "cloud builder" docker pattern in the form of the [`action`](./action) command seen below. The cloud builder pattern is a docker container that contains general tools, but operates on the contents of the host disk rather than files inside the container.
+
+Therefore, although Docker is being used, all config files, the database, source code, and compiled binaries are stored outside of docker. This greatly simplifies the majority of operations for TrinityCore, since you don't need to worry as much about Docker itself.
+
+### Project Layout and Conventions
+
+#### General
+
+- `/containerfs`: this folder will be mounted into the action container as `/hostfs`. One way to think about this is that when the docker container is running, reading/ a file in `/hostfs/*` is like reading a file on the system hosting docker.
+- `/action`: A bash script that builds and executes the action container built from `/tc-builder`.
+
+#### Containerfs Details
+
+- `/containerfs/bin`: Each script in this folder is accessible in the action container's PATH. These scripts are how stuff happen. They run in the action container and _NEVER_ on the host machine. They generally operate on `/hostfs` inside on the container.
+- `/containerfs/tc-client`: this path only exists inside the action container if `CLIENT_DIR` is populated
+- `/containerfs/tc-conf`: Where you should edit and store your worldserver/authserver conf files. The trinitycore-worldserver and trinitycore-authserver docker services both read from this directory.
+- `/containerfs/tc-db/mysql`: Where the MySQL (really mariadb) service stores its database files.
+- `/containerfs/tc-server/source`: The source (git repo) of TrinityCore. You can cd into this directory and pull the latest changes to update your server.
+- `/containerfs/tc-server/dist`: After a successful build, TrinityCore outputs its build artifacts here (`bin` for all the binary executables and `etc` for example configs).
+- `/containerfs/tc-wd`: The "working directory" for the running worldserver, and authserver. The initial SQL database and extracted maps will/must be placed here, and logs from the processes will also exist here.
+
+Initial Setup
+-------------
+
+While this project tries to remove as much complication as possible, you still need some awareness of TrinityCore's requirements and general operation. [The documentation is very helpful](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130077/Installation+Guide).
+
+You generally only need to do the following steps once.
+
+First, clone this repository. Then:
+
+```sh
+# Clone/update the TrinityCore repo to the proper location (3.3.5 branch).
+./action tc-fetch
+# Build TrinityCore
+./action tc-build
+# Get the matching database backup that matches your TrinityCore build
 ./action tc-db-fetch
 
 # Extract maps, this will take hours.
@@ -13,39 +72,91 @@ Initial Setup
 CLIENT_DIR=/absolutepath/to/installed/WoW3.3.5a ./action tc-extract
 ```
 
-Modify /containerfs/tc-conf/*.conf files if you'd like
+Configuration
+-------------
 
-Boot (first time)
+Each time your build TrinityCore, worldserver.conf.dist and authserver.conf.dist will be output to `/containerfs/tc-server/dist/etc`. You can compare these files to what will be used when running the services:
+
+```sh
+diff -u containerfs/tc-server/dist/etc/authserver.conf.dist containerfs/tc-conf/authserver.conf
+# and
+diff -u containerfs/tc-server/dist/etc/worldserver.conf.dist containerfs/tc-conf/worldserver.conf
+```
+
+Feel free to modify /containerfs/tc-conf/*.conf files as you see fit, but it's recommended to first get everything working with the repo as is before you begin heavy customization.
+
+Server Start / Boot
+-------------------
 
 ```sh
 docker-compose up
 ```
 
-First boot, the database container will start a temporary server to self-initialize. This takes time. After initialization, mysqld will will restart and be accessible, allowing the other services to start.
+On first boot, the database container will start a temporary server to self-initialize. This takes time. After initialization, mysqld/mariadbd will restart and be accessible, allowing the other services to start. Watch the output and check for any errors. Nearly a gigbyte of SQL must be loaded eventually, so give it time.
 
-```sh
-docker-compose up -d
+You will likely see output like:
+
+```log
+...
+trinitycore-authserver_1   | All connections on DatabasePool 'auth' closed.
+trinitycore-authserver_1   | Could not prepare statements of the Login database, see log for details.
+trinitycore-authserver_1   | Closing down DatabasePool 'auth'.
+trinitycore-authserver_1   | Asynchronous connections on DatabasePool 'auth' terminated. Proceeding with synchronous connections.
+trinitycore-authserver_1   | All connections on DatabasePool 'auth' closed.
+trinitycore-authserver_1 exited with code 1
 ```
 
-Running worldserver commands:
+This is because on first boot, the authserver attempts to do its initialization, but the database is in the process of being created by the worldserver. Wait until you see output like:
+
+```log
+trinitycore-worldserver_1  | World initialized in 1 minutes 12 seconds
+trinitycore-worldserver_1  | Starting up anti-freeze thread (60 seconds max stuck time)...
+trinitycore-worldserver_1  | TrinityCore rev. unknown 1970-01-01 00:00:00 +0000 (Archived branch) (Unix, RelWithDebInfo, Static) (worldserver-daemon) ready...
+```
+
+Then shut everything down with CTRL+C, wait for everything the gracefully stop, and start it back up. You should see the authserver successfully apply its updates, and eventually see success messages from both the worldserver and authservers.
+
+Success looks like:
+
+```
+trinitycore-authserver_1   | Added realm "Trinity" at 127.0.0.1:8085.
+........
+trinitycore-worldserver_1  | World initialized in 1 minutes 7 seconds
+trinitycore-worldserver_1  | Starting up anti-freeze thread (60 seconds max stuck time)...
+trinitycore-worldserver_1  | TrinityCore rev. unknown 1970-01-01 00:00:00 +0000 (Archived branch) (Unix, RelWithDebInfo, Static) (worldserver-daemon) ready...
+```
+
+_Note: CTRL+C will stop all services. On subsequent runs, you might find daemon mode more useful (`docker-compose up -d`) so you don't need a terminal window open. See the [Docker Compose documentation](https://docs.docker.com/get-started/08_using_compose/) for more details._
+
+
+Worldserver Terminal / Prompt
+-----------------------------
+
+Once the services are up, you'll need to create users and general TrinityCore tasks as outlined in [Final Server Steps](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/77971021/Final+Server+Steps). This project is slightly different, since Docker must be used to connect to TrinityCore's worldserver admin terminal:
 
 ```sh
 docker ps | grep worldserver
 # take the name or container id and put it below
 # generally will be "trinitycore-worldserver_1"
-docker attach CONTAINER_NAME_OR_ID
-# at worldserver prompt
+docker attach trinitycore-worldserver_1
+# at worldserver prompt:
 TC>
 # DO NOT CTRL+C, unless you want the worldserver to restart!
-# Detatch let leave it running with: CTRL-p CTRL-q
+# Detatch instead: CTRL-p CTRL-q
 ```
 
-Useful worldserver commands:
+Useful Worldserver Commands
+---------------------------
+
+Create a a GM user:
 
 ```sh
 account create <user> <pass>
 account set gmlevel <user> 3 -1 # give user GM power on all realms
 ```
+
+Connecting to Your Server with a Client
+---------------------------------------
 
 Set your client's WoW-3.3.5a/Data/enUS/realmlist.wtf:
 
@@ -53,7 +164,11 @@ Set your client's WoW-3.3.5a/Data/enUS/realmlist.wtf:
 set realmlist localhost
 ```
 
-And start your client! If you have an older mac still capable of running the client, you may need to remove the "quarantine" attribute to avoid "Failed to open archive interface.MPQ" errors:
+And start your client! 
+
+_Note for Mac Users: Apple deprecated 32-bit applications, making the 3.3.5a client unrunable natively._
+
+If you have an older mac still capable of running the client, you may need to remove the "quarantine" attribute to avoid "Failed to open archive interface.MPQ" errors:_
 
 ```sh
 cd /path/to/WoW-3.3.5a
@@ -67,41 +182,85 @@ An alternative workaround is to run the macos binary directly:
 ```
 
 Shutdown
+--------
 
+See [Docker Compose documentation](https://docs.docker.com/get-started/08_using_compose/), but generally:
+
+```sh
+docker-compose down # when running in daemon mode, otherwise just CTRL+C
 ```
-docker-compose down
-```
 
-Manual DB Changes (such as https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections)
+Manual Database Updates
+-----------------------
 
-[adminer](https://hub.docker.com/_/adminer) (aka phpMyAdmin) is included as a container. Using it requires the following:
-
-1. Visit http://localhost:8080/?server=trinitycore-db&username=root . Note: trinitycore-db is the service name within the docker cluster, so that services within can discover each other.
-1. Use your root password as specified in [docker-compose.yaml](./docker-compose.yaml).
-1. Do whatever you need to do, like update your realmlist address with your client-accessible IP address:
+A common manual database change is [updating the auth database realmlist ip addresss](https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections).
 
 ```sql
 use auth;
 UPDATE realmlist
 set 
-  address='127.0.0.1'
+  address='127.0.0.1' /* <-- Replace with whatever you need */
   /*, localAddress='${USER_IP_ADDRESS}'*/
 WHERE name='Trinity';
 ```
 
-Questions / TODO
+You can either connect to the cluster using docker and run `mysql` manually, or use adminer/phpMyAdmin.
 
-- [ ] containerfs vs hostfs. "containerfs" generally means "these folders will be docker `COPY`-ied to the root of the container. I'm doing the opposite, since I'm not `COPY`, I'm mounting as a bind volume
+### Manual
 
-- [x] Update passwords / networking in *.conf
-- ~[ ] Need to have some sort of update-ip command still https://trinitycore.atlassian.net/wiki/spaces/tc/pages/2130094/Networking#Networking-Settingtheauthdatabaserealmlistforinternetconnections~
-- [ ] Add a "how this works" overview
-- [ ] Add a "how to update the code" section
-- [x] Add a "accessing the db" section (adminer?)
-- [x] Test a real client
-- [x] Have a better pattern for passing the client in for extraction
+```sh
+# Root password is defined in docker-compose.yaml
+docker-compose exec trinitycore-db mysql -uroot -psecurity-through-subnets
+```
+
+### Adminer / phpMyAdmin
+
+[adminer](https://hub.docker.com/_/adminer) (aka phpMyAdmin) is included as a container. Using it requires the following:
+
+1. Uncomment the service declaration in [docker-compose.yaml](./docker-compose.yaml) (it's commented out since it allows anyone with your IP address and root password to edit the database).
+1. Visit http://localhost:8080/?server=trinitycore-db&username=root . Note: trinitycore-db is the service name within the docker cluster, so that services within can discover each other.
+1. Use your root password as specified in [docker-compose.yaml](./docker-compose.yaml).
+1. Do whatever you need to do, like update your realmlist address with your client-accessible IP address:
 
 
-Notes:
+Updating the Server
+-------------------
 
-To start from scratch with the database: `rm -rf /containerfs/tc-db/mysql`
+To save space (TrinityCore repo is > 6GB!), the `tc-fetch` action does a shallow clone. You can run `./action tc-fetch` again to always grab the latest tagged release of the `3.3.5` branch. You can also do it manually, if you'd like to have the full repo or a specific commit:
+
+```sh
+git fetch origin
+git reset --hard origin/3.3.5 # or whatever tag/release you'd like
+```
+
+Then rebuild the server:
+
+```sh
+# optional, only if you want a completely clean build (usually not necessary):
+git clean -dfx
+
+# build
+./action tc-build
+```
+
+Starting from Scratch
+---------------------
+
+The only truly unique information is due to the database, so generally you only need:
+
+```sh
+# delete the database
+rm -rf containerfs/tc-db/mysql/
+```
+
+But if you'd like to fully start over, do the above and the following:
+
+```sh
+# delete the initial SQL
+rm -rf containerfs/tc-wd/*.sql
+# delete the source tree
+rm -rf containerfs/tc-server/{dist,source}
+# delete the maps, logs (CAUTION: MAPS TAKE HOURS TO REGEN!)
+rm -rf containerfs/tc-wd/*
+```
+

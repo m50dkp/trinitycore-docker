@@ -17,11 +17,11 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: security-through-subnets
 
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - 8080:8080
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
 
   trinitycore-worldserver:
     image: tc-builder

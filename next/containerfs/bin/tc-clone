@@ -1,7 +1,0 @@
-#!/bin/bash
-
-set -euo pipefail
-set -x
-
-cd /hostfs/tc-server
-git clone --depth 1 -b 3.3.5 git://github.com/TrinityCore/TrinityCore.git source
