@@ -254,7 +254,7 @@ git -C containerfs/tc-server/source clean -dfx
 Starting from Scratch
 ---------------------
 
-The only truly unique information is in the database, so generally you only need:
+The truly unique information is in the database, so generally you only need:
 
 ```sh
 # delete the database
