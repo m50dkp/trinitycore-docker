@@ -12,9 +12,9 @@
 # only if specified
 args=()
 args+=(-it --rm)
-args+=(-v "$(PWD)/containerfs/:/hostfs/:cached")
+args+=(-v "$(PWD)/containerfs/:/hostfs/:delegated")
 ! [[ -z "${CLIENT_DIR:-}" ]] \
-  && args+=(-v "$CLIENT_DIR":/hostfs/tc-client/:cached)
+  && args+=(-v "$CLIENT_DIR":/hostfs/tc-client/:delegated)
 args+=(-w /hostfs)
 args+=(tc-builder:latest)
 args+=($@)

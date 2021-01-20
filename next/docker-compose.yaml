@@ -6,9 +6,9 @@ services:
     image: mariadb:10.5
     restart: always
     volumes:
-      - ./containerfs:/hostfs:cached
+      - ./containerfs:/hostfs:delegated
       # store database outside the container
-      - ./containerfs/tc-db/mysql:/var/lib/mysql:cached
+      - ./containerfs/tc-db/mysql:/var/lib/mysql:delegated
       # mariadb image will load all *.sql files on first boot
       - ./containerfs/tc-server/source/sql/create/create_mysql.sql:/docker-entrypoint-initdb.d/000_create_mysql.sql
       - ./containerfs/tc-db/grants.sql:/docker-entrypoint-initdb.d/001_grants.sql
@@ -30,7 +30,7 @@ services:
     tty: true # Prevent prompt from spamming stdout
     stdin_open: true
     volumes:
-      - ./containerfs:/hostfs:cached
+      - ./containerfs:/hostfs:delegated
       # pass custom config into expected location for trinitycore
       - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
     ports:
@@ -42,7 +42,7 @@ services:
     working_dir: /hostfs/tc-wd
     tty: true # Prevent prompt from spamming stdout
     volumes:
-      - ./containerfs:/hostfs:cached
+      - ./containerfs:/hostfs:delegated
       # pass custom config into expected location for trinitycore
       - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
     ports:
