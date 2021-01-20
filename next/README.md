@@ -96,36 +96,16 @@ docker-compose up
 
 On first boot, the database container will start a temporary server to self-initialize. This takes time. After initialization, mysqld/mariadbd will restart and be accessible, allowing the other services to start. Watch the output and check for any errors. Nearly a gigbyte of SQL must be loaded eventually, so give it time.
 
-You will likely see output like:
+Once the database is ready TrinityCore worldserver will autopopulate the database with everything it needs, and then startup. Finally, the authserver will boot once the worldserver is ready.
 
-```log
-...
-trinitycore-authserver_1   | All connections on DatabasePool 'auth' closed.
-trinitycore-authserver_1   | Could not prepare statements of the Login database, see log for details.
-trinitycore-authserver_1   | Closing down DatabasePool 'auth'.
-trinitycore-authserver_1   | Asynchronous connections on DatabasePool 'auth' terminated. Proceeding with synchronous connections.
-trinitycore-authserver_1   | All connections on DatabasePool 'auth' closed.
-trinitycore-authserver_1 exited with code 1
-```
+You'll know it's all ready when you see output like:
 
-This is because on first boot, the authserver attempts to do its initialization, but the database is in the process of being created by the worldserver. Wait until you see output like:
-
-```log
-trinitycore-worldserver_1  | World initialized in 1 minutes 12 seconds
+```sh
+trinitycore-worldserver_1  | World initialized in 0 minutes 56 seconds
 trinitycore-worldserver_1  | Starting up anti-freeze thread (60 seconds max stuck time)...
-trinitycore-worldserver_1  | TrinityCore rev. unknown 1970-01-01 00:00:00 +0000 (Archived branch) (Unix, RelWithDebInfo, Static) (worldserver-daemon) ready...
-```
-
-Then shut everything down with CTRL+C, wait for everything the gracefully stop, and start it back up. You should see the authserver successfully apply its updates, and eventually see success messages from both the worldserver and authservers.
-
-Success looks like:
-
-```
+trinitycore-worldserver_1  | TrinityCore rev. 0b7b7f10f90e 2021-01-15 08:31:35 +0000 (HEAD branch) (Unix, RelWithDebInfo, Static) (worldserver-daemon) ready...
+... # and eventually
 trinitycore-authserver_1   | Added realm "Trinity" at 127.0.0.1:8085.
-........
-trinitycore-worldserver_1  | World initialized in 1 minutes 7 seconds
-trinitycore-worldserver_1  | Starting up anti-freeze thread (60 seconds max stuck time)...
-trinitycore-worldserver_1  | TrinityCore rev. unknown 1970-01-01 00:00:00 +0000 (Archived branch) (Unix, RelWithDebInfo, Static) (worldserver-daemon) ready...
 ```
 
 _Note: CTRL+C will stop all services. On subsequent runs, you might find daemon mode more useful (`docker-compose up -d`) so you don't need a terminal window open. See the [Docker Compose documentation](https://docs.docker.com/get-started/08_using_compose/) for more details._

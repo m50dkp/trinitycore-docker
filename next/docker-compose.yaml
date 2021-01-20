@@ -29,6 +29,8 @@ services:
     working_dir: /hostfs/tc-wd
     tty: true # Prevent prompt from spamming stdout
     stdin_open: true
+    depends_on:
+      - "trinitycore-db"
     volumes:
       - ./containerfs:/hostfs:delegated
       # pass custom config into expected location for trinitycore
@@ -38,9 +40,11 @@ services:
 
   trinitycore-authserver:
     image: tc-builder
-    command: /bin/sh -c 'wait-port trinitycore-db:3306 && /hostfs/tc-server/dist/bin/authserver'
+    command: /bin/sh -c 'wait-port trinitycore-db:3306 && wait-port trinitycore-worldserver:8085 && /hostfs/tc-server/dist/bin/authserver'
     working_dir: /hostfs/tc-wd
     tty: true # Prevent prompt from spamming stdout
+    depends_on:
+      - "trinitycore-db"
     volumes:
       - ./containerfs:/hostfs:delegated
       # pass custom config into expected location for trinitycore
