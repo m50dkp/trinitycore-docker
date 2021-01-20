@@ -1,7 +1,7 @@
 
-/next/containerfs/tc-server/source
-/next/containerfs/tc-server/dist
-/next/containerfs/tc-client
-/next/containerfs/tc-db/mysql
-/next/containerfs/tc-wd
-/next/containerfs/tc-conf/*.dist
+/containerfs/tc-server/source
+/containerfs/tc-server/dist
+/containerfs/tc-client
+/containerfs/tc-db/mysql
+/containerfs/tc-wd
+/containerfs/tc-conf/*.dist
