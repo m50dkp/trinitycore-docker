@@ -1,0 +1,53 @@
+version: "3.7"
+
+services:
+  # accessible at //trinitycore-db:3306 inside the swarm
+  trinitycore-db:
+    image: mariadb:10.5
+    restart: always
+    volumes:
+      - ./containerfs:/hostfs:delegated
+      # store database outside the container
+      - ./containerfs/tc-db/mysql:/var/lib/mysql:delegated
+      # mariadb image will load all *.sql files on first boot
+      - ./containerfs/tc-server/source/sql/create/create_mysql.sql:/docker-entrypoint-initdb.d/000_create_mysql.sql
+      - ./containerfs/tc-db/grants.sql:/docker-entrypoint-initdb.d/001_grants.sql
+    ports:
+      - 3306
+    environment:
+      MYSQL_ROOT_PASSWORD: security-through-subnets
+
+  # adminer:
+  #   image: adminer
+  #   restart: always
+  #   ports:
+  #     - 8080:8080
+
+  trinitycore-worldserver:
+    image: tc-builder
+    command: /bin/sh -c 'wait-port trinitycore-db:3306 && /hostfs/tc-server/dist/bin/worldserver'
+    working_dir: /hostfs/tc-wd
+    tty: true # Prevent prompt from spamming stdout
+    stdin_open: true
+    depends_on:
+      - "trinitycore-db"
+    volumes:
+      - ./containerfs:/hostfs:delegated
+      # pass custom config into expected location for trinitycore
+      - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
+    ports:
+      - 8085:8085
+
+  trinitycore-authserver:
+    image: tc-builder
+    command: /bin/sh -c 'wait-port trinitycore-db:3306 && wait-port trinitycore-worldserver:8085 && /hostfs/tc-server/dist/bin/authserver'
+    working_dir: /hostfs/tc-wd
+    tty: true # Prevent prompt from spamming stdout
+    depends_on:
+      - "trinitycore-db"
+    volumes:
+      - ./containerfs:/hostfs:delegated
+      # pass custom config into expected location for trinitycore
+      - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
+    ports:
+      - 3724:3724

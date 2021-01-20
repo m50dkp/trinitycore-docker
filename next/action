@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# build if necessary
+{
+  docker image inspect tc-builder:latest &>/dev/null
+} || {
+  # Copy and paste this command to rebuild
+  docker build -f tc-builder/Dockerfile -t tc-builder:latest .
+}
+
+# Build up the arguments so we can conditionally link in the client directory
+# only if specified
+args=()
+args+=(-it --rm)
+args+=(-v "$(PWD)/containerfs/:/hostfs/:delegated")
+! [[ -z "${CLIENT_DIR:-}" ]] \
+  && args+=(-v "$CLIENT_DIR":/hostfs/tc-client/:delegated)
+args+=(-w /hostfs)
+args+=(tc-builder:latest)
+args+=($@)
+
+docker run "${args[@]}"
