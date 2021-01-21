@@ -1,0 +1,15 @@
+#!/bin/bash
+
+set -euo pipefail
+set -x
+
+# This script creates the image used only in CI. It likely only ever needs to be
+# executed once, and already has.
+
+! [ -d ./containerfs/tc-wd/maps ] && {
+  echo "Maps not found, extract first!"
+  exit 1
+}
+
+docker build -f ci/Dockerfile-maps-ci -t kirbysayshi/trinitycore-maps .
+docker push kirbysayshi/trinitycore-maps:latest

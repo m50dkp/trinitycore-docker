@@ -1,0 +1,11 @@
+#!/bin/bash
+
+set -euo pipefail
+set -x
+
+docker pull kirbysayshi/trinitycore-maps
+
+# Extract the maps from the image to their expected location by merging the directory
+CID=$(docker create kirbysayshi/trinitycore-maps)
+docker cp ${CID}:/containerfs/tc-wd/ containerfs/
+docker rm ${CID}
