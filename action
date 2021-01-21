@@ -11,10 +11,15 @@
 # Build up the arguments so we can conditionally link in the client directory
 # only if specified
 args=()
+
+# https://serverfault.com/a/753459
 [ -t 0 ] && args+=(-it --rm)
+
 args+=(-v "${PWD}/containerfs/:/hostfs/:delegated")
+
 ! [[ -z "${CLIENT_DIR:-}" ]] \
   && args+=(-v "$CLIENT_DIR":/hostfs/tc-client/:delegated)
+
 args+=(-w /hostfs)
 args+=(tc-builder:latest)
 args+=($@)
