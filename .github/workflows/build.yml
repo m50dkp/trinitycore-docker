@@ -28,15 +28,15 @@ jobs:
       - name: Get TrinityCore source
         run: ./action tc-fetch
 
-      # - name: Github Actions Cache Permissions Fix
-      #   run: chown -R 
+      - name: Github Actions Cache Permissions Fix (pre cache download)
+        run: chmod -R a+rwx .
 
       - name: Cache / Retrieve pre-built TrinityCore
         uses: actions/cache@v2
         env:
           cache-name: trinitycore-build-cache
         with:
-          path: ./containerfs/tc-server/source/build
+          path: containerfs/tc-server/source/build
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./containerfs/tc-server/source/.git/HEAD') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -54,6 +54,9 @@ jobs:
 
       - name: Boot services
         run: docker-compose up -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml --exit-code-from trinitycore-ready
+
+      - name: Github Actions Cache Permissions Fix (post build)
+        run: chmod -R a+rwx .
 
       # - name: Wait a bit and hopefully it loaded
       #   run: sleep 60
