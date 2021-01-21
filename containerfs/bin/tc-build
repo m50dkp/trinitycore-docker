@@ -15,7 +15,17 @@ cd /tc-server-source
 
 mkdir -p build
 cd build
-cmake ../ -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
+
+if command -v ccache &> /dev/null; then
+  export CCACHE_DIR=/tc-server-source/build/.ccache
+  cmake ../ \
+    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
+    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+    -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
+else
+  cmake ../ -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
+fi
+
 make -j $(nproc)
 make install
 

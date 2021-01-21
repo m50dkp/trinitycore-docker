@@ -33,20 +33,17 @@ jobs:
           sudo chmod -R a+rwx .
           sudo chown -R $(whoami):$(id -ng) .
 
-      - name: Cache / Retrieve pre-built TrinityCore
+      - name: Cache / Retrieve TrinityCore CCache
         uses: actions/cache@v2
         env:
           cache-name: trinitycore-build-cache
         with:
-          path: containerfs/tc-server/source/build
+          path: ./containerfs/tc-server/source/build/.ccache
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./containerfs/tc-server/source/.git/HEAD') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
-      - name: List files to ensure cache is proper
-        run: ls -laR .
 
       - name: Build TrinityCore
         run: ./action tc-build
@@ -60,10 +57,10 @@ jobs:
       - name: Boot services
         run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
 
-      - name: Github Actions Cache Permissions Fix (post build)
-        run: |
-          sudo chmod -R a+rwx .
-          sudo chown -R $(whoami):$(id -ng) .
+      # - name: Github Actions Cache Permissions Fix (post build)
+      #   run: |
+      #     sudo chmod -R a+rwx .
+      #     sudo chown -R $(whoami):$(id -ng) .
 
       # - name: Wait a bit and hopefully it loaded
       #   run: sleep 60
