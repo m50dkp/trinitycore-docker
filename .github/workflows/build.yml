@@ -18,12 +18,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Use Node.js 14
+      - name: Use node.js 14
         uses: actions/setup-node@v1
         with:
           node-version: 14
 
-      - name: Get TrinityCore Source
+      - name: Get TrinityCore source
         run: ./action tc-fetch
 
       - name: Cache / Retrieve pre-built TrinityCore
@@ -48,11 +48,14 @@ jobs:
       - name: Prepare maps
         run: ./ci/copy-maps-from-image
 
-      - name: Boot Services
+      - name: Boot services
         run: docker-compose up -d
 
-      - name: Wait for Final service (authserver)
+      - name: Wait for final service (authserver)
         run: bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
+
+      - name: Shutdown services
+        run: docker-compose down
 
       - name: Upload logs
         if: always()
