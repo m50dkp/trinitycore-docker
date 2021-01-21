@@ -38,5 +38,12 @@ jobs:
       - name: Boot Services
         run: docker-compose up -d
 
-      - name: Wait for Final service (authserver)
-        run: npx wait-port 3724
+      - name: Wait (max 5minutes) for Final service (authserver)
+        run: npx wait-port -t 300000 3724
+
+      - name: Upload logs
+        if: always()
+        uses: actions/upload-artifact@v1
+        with:
+          name: TrinityCore Logs
+          path: containerfs/tc-wd/*.log
