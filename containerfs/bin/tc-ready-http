@@ -1,0 +1,24 @@
+#!/bin/bash
+
+set -euo pipefail
+set -x
+
+# trinitycore appears to do the right thing, and only open its ports when it's
+# ready to receive traffic. This allows `wait-port` to effectively sequence each
+# container's entrypoint as seen in docker-compose.yaml. However, docker-compose
+# appears to open these ports _immediately_ to the host network (at least on a
+# mac). So inside of the docker network, we wait for all ports, then start an
+# http server. Outside, in CI, we poll the http server and then WE WILL KNOW
+# when the server is actually ready.
+
+wait-port --wait-for-dns trinitycore-db:3306
+wait-port --wait-for-dns trinitycore-worldserver:8085
+wait-port --wait-for-dns trinitycore-authserver:3724
+
+node <<EOF
+  require("http").createServer((req, res) => {
+    res.statusCode = 200;
+    res.setHeader('Content-Type', 'text/plain');
+    res.end('ok');
+  }).listen(7777, '0.0.0.0');
+EOF

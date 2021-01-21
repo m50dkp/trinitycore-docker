@@ -26,6 +26,19 @@ jobs:
       - name: Get TrinityCore Source
         run: ./action tc-fetch
 
+      - name: Cache / Retrieve pre-built TrinityCore
+        uses: actions/cache@v2
+        env:
+          cache-name: trinitycore-build-cache
+        with:
+          # npm cache files are stored in `~/.npm` on Linux/macOS
+          path: containerfs/tc-server/source/build
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./containerfs/tc-server/source/.git/HEAD') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
       - name: Build TrinityCore
         run: ./action tc-build
 
@@ -38,12 +51,12 @@ jobs:
       - name: Boot Services
         run: docker-compose up -d
 
-      - name: Wait (max 5minutes) for Final service (authserver)
-        run: npx wait-port -t 300000 3724
+      - name: Wait for Final service (authserver)
+        run: bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
 
       - name: Upload logs
         if: always()
         uses: actions/upload-artifact@v1
         with:
           name: TrinityCore Logs
-          path: containerfs/tc-wd/*.log
+          path: ./containerfs/tc-wd/*.log
