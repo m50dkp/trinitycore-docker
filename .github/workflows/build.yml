@@ -58,7 +58,7 @@ jobs:
         run: ./ci/copy-maps-from-image
 
       - name: Boot services
-        run: docker-compose up -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml --exit-code-from trinitycore-ready
+        run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
 
       - name: Github Actions Cache Permissions Fix (post build)
         run: |
