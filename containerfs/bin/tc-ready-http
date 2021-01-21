@@ -15,10 +15,12 @@ wait-port --wait-for-dns trinitycore-db:3306
 wait-port --wait-for-dns trinitycore-worldserver:8085
 wait-port --wait-for-dns trinitycore-authserver:3724
 
-node <<EOF
-  require("http").createServer((req, res) => {
-    res.statusCode = 200;
-    res.setHeader('Content-Type', 'text/plain');
-    res.end('ok');
-  }).listen(7777, '0.0.0.0');
-EOF
+exit 0
+# node <<EOF
+#   require("http").createServer((req, res) => {
+#     res.statusCode = 200;
+#     res.setHeader('Content-Type', 'text/plain');
+#     res.end('ok');
+#     setTimeout(() => process.exit(0), 5000);
+#   }).listen(7777, '0.0.0.0');
+# EOF

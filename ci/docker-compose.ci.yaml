@@ -1,0 +1,9 @@
+version: "3.7"
+
+services:
+  
+  trinitycore-ready:
+    image: tc-builder
+    command: tc-ready-http
+    volumes:
+      - ./containerfs:/hostfs:delegated

@@ -51,11 +51,3 @@ services:
       - ./containerfs/tc-conf:/hostfs/tc-server/dist/etc
     ports:
       - 3724:3724
-
-  trinitycore-ready:
-    image: tc-builder
-    command: tc-ready-http
-    volumes:
-      - ./containerfs:/hostfs:delegated
-    ports:
-      - 7777:7777

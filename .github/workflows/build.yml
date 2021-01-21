@@ -50,8 +50,23 @@ jobs:
       - name: Prepare maps
         run: ./ci/copy-maps-from-image
 
-      # - name: Boot services
-      #   run: docker-compose up -d
+      - name: Boot services
+        run: docker-compose up -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml --exit-code-from trinitycore-ready
+
+      # - name: Wait a bit and hopefully it loaded
+      #   run: sleep 60
+
+      # - name: Check containers
+      #   run: docker-compose ps
+
+      # - name: Dump docker logs
+      #   run: docker-compose logs
+
+      # - name: Check worldserver port
+      #   run: nmap 0.0.0.0 -p 8085
+
+      # - name: Check authserver port
+      #   run: nmap 0.0.0.0 -p 3724
 
       # - name: Wait for final service (authserver)
       #   run: /bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
