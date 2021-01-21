@@ -50,18 +50,18 @@ jobs:
       - name: Prepare maps
         run: ./ci/copy-maps-from-image
 
-      - name: Boot services
-        run: docker-compose up -d
+      # - name: Boot services
+      #   run: docker-compose up -d
 
-      - name: Wait for final service (authserver)
-        run: /bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
+      # - name: Wait for final service (authserver)
+      #   run: /bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
 
-      - name: Shutdown services
-        run: docker-compose down
+      # - name: Shutdown services
+      #   run: docker-compose down
 
-      - name: Upload logs
-        if: always()
-        uses: actions/upload-artifact@v1
-        with:
-          name: TrinityCore Logs
-          path: ./containerfs/tc-wd/*.log
+      # - name: Upload logs
+      #   if: always()
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: TrinityCore Logs
+      #     path: ./containerfs/tc-wd/*.log
