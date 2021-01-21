@@ -6,7 +6,6 @@ services:
     image: mariadb:10.5
     restart: always
     volumes:
-      - ./containerfs:/hostfs:delegated
       # store database outside the container
       - ./containerfs/tc-db/mysql:/var/lib/mysql:delegated
       # mariadb image will load all *.sql files on first boot
