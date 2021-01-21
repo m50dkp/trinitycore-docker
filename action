@@ -11,8 +11,8 @@
 # Build up the arguments so we can conditionally link in the client directory
 # only if specified
 args=()
-args+=(-it --rm)
-args+=(-v "$(PWD)/containerfs/:/hostfs/:delegated")
+[ -t 0 ] && args+=(-it --rm)
+args+=(-v "${PWD}/containerfs/:/hostfs/:delegated")
 ! [[ -z "${CLIENT_DIR:-}" ]] \
   && args+=(-v "$CLIENT_DIR":/hostfs/tc-client/:delegated)
 args+=(-w /hostfs)
