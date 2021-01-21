@@ -29,7 +29,10 @@ jobs:
         run: ./action tc-fetch
 
       - name: Github Actions Cache Permissions Fix (pre cache download)
-        run: sudo chmod -R a+rwx .
+        run: |
+          sudo chmod -R a+rwx .
+          sudo chown -R $(whoami):$(id -ng) .
+          find ./containerfs/tc-server
 
       - name: Cache / Retrieve pre-built TrinityCore
         uses: actions/cache@v2
@@ -56,7 +59,9 @@ jobs:
         run: docker-compose up -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml --exit-code-from trinitycore-ready
 
       - name: Github Actions Cache Permissions Fix (post build)
-        run: sudo chmod -R a+rwx .
+        run: |
+          sudo chmod -R a+rwx .
+          sudo chown -R $(whoami):$(id -ng) .
 
       # - name: Wait a bit and hopefully it loaded
       #   run: sleep 60
