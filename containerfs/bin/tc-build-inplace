@@ -10,25 +10,4 @@ set -x
 
 cd /hostfs/tc-server/source
 
-mkdir -p build
-cd build
-
-if command -v ccache &> /dev/null; then
-  export CCACHE_DIR=/tc-server-source/build/.ccache
-  cmake ../ \
-    -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-    -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
-else
-  cmake ../ -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
-fi
-
-make -j $(nproc)
-make install
-
-# copy out the conf files for easy comparison
-rsync \
-  --compress-level=0 \
-  -arhW \
-  --info=progress2 \
-  /hostfs/tc-server/dist/etc/* /hostfs/tc-conf/
+tc-do-build

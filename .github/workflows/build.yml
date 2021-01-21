@@ -46,7 +46,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Build TrinityCore
-        run: ./action tc-build
+        run: ./action tc-build-inplace
 
       - name: Get DB
         run: ./action tc-db-fetch
