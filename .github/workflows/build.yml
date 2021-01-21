@@ -48,44 +48,11 @@ jobs:
       - name: Build TrinityCore
         run: ./action tc-build-inplace
 
-      - name: Get DB
-        run: ./action tc-db-fetch
+      # - name: Get DB
+      #   run: ./action tc-db-fetch
 
-      - name: Prepare maps
-        run: ./ci/copy-maps-from-image
+      # - name: Prepare maps
+      #   run: ./ci/copy-maps-from-image
 
-      - name: Boot services
-        run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
-
-      # - name: Github Actions Cache Permissions Fix (post build)
-      #   run: |
-      #     sudo chmod -R a+rwx .
-      #     sudo chown -R $(whoami):$(id -ng) .
-
-      # - name: Wait a bit and hopefully it loaded
-      #   run: sleep 60
-
-      # - name: Check containers
-      #   run: docker-compose ps
-
-      # - name: Dump docker logs
-      #   run: docker-compose logs
-
-      # - name: Check worldserver port
-      #   run: nmap 0.0.0.0 -p 8085
-
-      # - name: Check authserver port
-      #   run: nmap 0.0.0.0 -p 3724
-
-      # - name: Wait for final service (authserver)
-      #   run: /bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
-
-      # - name: Shutdown services
-      #   run: docker-compose down
-
-      # - name: Upload logs
-      #   if: always()
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: TrinityCore Logs
-      #     path: ./containerfs/tc-wd/*.log
+      # - name: Boot services
+      #   run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
