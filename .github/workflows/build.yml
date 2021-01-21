@@ -45,8 +45,8 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
 
-      - name: List tc-source to ensure cache is proper
-        run: ls -laR containerfs/tc-server
+      - name: List files to ensure cache is proper
+        run: ls -laR .
 
       - name: Build TrinityCore
         run: ./action tc-build
