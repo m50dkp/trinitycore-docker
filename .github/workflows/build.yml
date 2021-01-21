@@ -32,7 +32,6 @@ jobs:
         run: |
           sudo chmod -R a+rwx .
           sudo chown -R $(whoami):$(id -ng) .
-          find ./containerfs/tc-server
 
       - name: Cache / Retrieve pre-built TrinityCore
         uses: actions/cache@v2
@@ -45,6 +44,9 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
+
+      - name: List tc-source to ensure cache is proper
+        run: ls -laR containerfs/tc-server
 
       - name: Build TrinityCore
         run: ./action tc-build
