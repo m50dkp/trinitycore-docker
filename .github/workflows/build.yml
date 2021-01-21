@@ -28,13 +28,15 @@ jobs:
       - name: Get TrinityCore source
         run: ./action tc-fetch
 
+      # - name: Github Actions Cache Permissions Fix
+      #   run: chown -R 
+
       - name: Cache / Retrieve pre-built TrinityCore
         uses: actions/cache@v2
         env:
           cache-name: trinitycore-build-cache
         with:
-          # npm cache files are stored in `~/.npm` on Linux/macOS
-          path: containerfs/tc-server/source/build
+          path: ./containerfs/tc-server/source/build
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./containerfs/tc-server/source/.git/HEAD') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
