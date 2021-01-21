@@ -52,7 +52,7 @@ jobs:
         run: docker-compose up -d
 
       - name: Wait for final service (authserver)
-        run: bin/sh -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
+        run: /bin/bash -c 'until curl -s "http://localhost:7777"; do sleep 1; done;'
 
       - name: Shutdown services
         run: docker-compose down
