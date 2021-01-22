@@ -33,12 +33,13 @@ jobs:
           sudo chmod -R a+rwx .
           sudo chown -R $(whoami):$(id -ng) .
 
-      - name: Cache / Retrieve TrinityCore CCache
+      - name: Cache / Retrieve TrinityCore Bins
         uses: actions/cache@v2
+        id: trinitycore-bin-cache
         env:
           cache-name: trinitycore-build-cache
         with:
-          path: ./containerfs/tc-server/source/build/.ccache
+          path: ./containerfs/tc-server/dist
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./containerfs/tc-server/source/.git/HEAD') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
@@ -46,7 +47,8 @@ jobs:
             ${{ runner.os }}-
 
       - name: Build TrinityCore
-        run: ./action tc-build-inplace
+        if: steps.trinitycore-bin-cache.outputs.cache-hit != 'true'
+        run: ./action tc-build
 
       # - name: Get DB
       #   run: ./action tc-db-fetch
