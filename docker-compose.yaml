@@ -10,7 +10,7 @@ services:
       - ./containerfs/tc-db/mysql:/var/lib/mysql:delegated
       # mariadb image will load all *.sql files on first boot
       - ./containerfs/tc-server/source/sql/create/create_mysql.sql:/docker-entrypoint-initdb.d/000_create_mysql.sql
-      - ./containerfs/tc-wd/grants.sql:/docker-entrypoint-initdb.d/001_grants.sql
+      - ./containerfs/tc-db/grants.sql:/docker-entrypoint-initdb.d/001_grants.sql
     ports:
       - 3306
     environment:
