@@ -12,7 +12,21 @@ rsync \
   /hostfs/tc-server/source/ /tc-server-source
 
 cd /tc-server-source
-tc-do-build
+
+mkdir -p build
+cd build
+
+cmake ../ -DCMAKE_INSTALL_PREFIX=/hostfs/tc-server/dist
+
+make -j $(nproc)
+make install
+
+# copy out the conf files for easy comparison
+rsync \
+  --compress-level=0 \
+  -arhW \
+  --info=progress2 \
+  /hostfs/tc-server/dist/etc/* /hostfs/tc-conf/
 
 # Bring the build files back out to aid a rebuild.
 rsync \
