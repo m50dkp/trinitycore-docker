@@ -13,8 +13,9 @@
 args=()
 
 # https://serverfault.com/a/753459
-[ -t 0 ] && args+=(-it --rm)
+[ -t 0 ] && args+=(-it)
 
+args+=(--rm)
 args+=(-v "${PWD}/containerfs/:/hostfs/:delegated")
 
 ! [[ -z "${CLIENT_DIR:-}" ]] \
