@@ -28,6 +28,10 @@ jobs:
       - name: Get TrinityCore source
         run: ./action tc-fetch
 
+      # GHA's cache action does not run as sudo, but we're writing files inside
+      # of docker, running as root, directly to the host. The cache tries to
+      # extract the files, but then cannot write to directories owned by root.
+      # chmod/chown fixes the issue, allowing the files to extract successfully.
       - name: Github Actions Cache Permissions Fix (pre cache download)
         run: |
           sudo chmod -R a+rwx .
@@ -55,9 +59,6 @@ jobs:
 
       - name: Prepare maps
         run: ./ci/copy-maps-from-image
-
-      - name: Dump File Tree for debugging
-        run: ls -laR .
 
       - name: Boot services
         run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
