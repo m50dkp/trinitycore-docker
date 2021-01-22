@@ -9,13 +9,10 @@ TC_RELEASES_URL="https://github.com/TrinityCore/TrinityCore/releases"
 DB_VERSION=$(grep -o -E '(TDB_full[^"]+)' /hostfs/tc-server/source/revision_data.h.in.cmake)
 BUILD_NUM=$(node -p "'"$DB_VERSION"'.match(/(335\.[0-9]+)/)[1]")
 
-cd /hostfs/tc-db/
+cd /hostfs/tc-wd/
 
 # Download and Extract
 rm -rf *.7z *.sql
 curl -L -O "$TC_RELEASES_URL/download/TDB$BUILD_NUM/${DB_VERSION%.*}.7z"
 7z x *.7z
 rm *.7z
-
-# Default expected location is the worldserver's working dir
-mv -f *.sql /hostfs/tc-wd
