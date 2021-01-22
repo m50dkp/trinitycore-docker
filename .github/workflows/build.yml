@@ -50,11 +50,11 @@ jobs:
         if: steps.trinitycore-bin-cache.outputs.cache-hit != 'true'
         run: ./action tc-build
 
-      # - name: Get DB
-      #   run: ./action tc-db-fetch
+      - name: Get DB
+        run: ./action tc-db-fetch
 
-      # - name: Prepare maps
-      #   run: ./ci/copy-maps-from-image
+      - name: Prepare maps
+        run: ./ci/copy-maps-from-image
 
-      # - name: Boot services
-      #   run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
+      - name: Boot services
+        run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
