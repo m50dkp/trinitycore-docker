@@ -60,5 +60,5 @@ jobs:
       - name: Prepare maps
         run: ./ci/copy-maps-from-image
 
-      - name: Boot services
+      - name: Boot services and assert they all load
         run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready
