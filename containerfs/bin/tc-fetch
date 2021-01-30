@@ -3,16 +3,7 @@
 set -euo pipefail
 set -x
 
-
-
-# Get latest release, aiming for stability, rather than using a random commit on
-# the 3.3.5 branch. TrinityCore mixes 335 and 837 releases, so we cannot just
-# grab the first or latest entry. Using jq, grab all the tags with "TDB335" and
-# return the first one (latest).
-LATEST_RELEASE_TAG=$( \
-  curl --silent "https://api.github.com/repos/TrinityCore/TrinityCore/releases" \
-    | jq -r '[.[].tag_name | select(test("TDB335"))] | first' \
-)
+LATEST_RELEASE_TAG=$(tc-latest-release)
 
 # Cloning via --filter=tree:0 results in significantly less disk space used, and
 # is generally faster. See

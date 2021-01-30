@@ -25,7 +25,19 @@ jobs:
         with:
           node-version: 14
 
+      - name: Get TrinityCore Latest Release Tag
+        id: tc-latest-release
+        run: echo "::set-output name=tc-tag::$(./action tc-latest-release)"
+
+      - name: Cache / Retrieve TrinityCore Source
+        uses: actions/cache@v2
+        id: trinitycore-source-cache
+        with:
+          path: ./containerfs/tc-server
+          key: ${{ runner.os }}-trinitycore-source-cache-${{ steps.tc-latest-release.outputs.tc-tag }}
+
       - name: Get TrinityCore source
+        if: steps.trinitycore-source-cache.outputs.cache-hit != 'true'
         run: ./action tc-fetch
 
       # GHA's cache action does not run as sudo, but we're writing files inside
