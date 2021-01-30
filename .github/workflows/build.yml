@@ -25,6 +25,9 @@ jobs:
         with:
           node-version: 14
 
+      - name: Build root action container
+        run: ./action pwd
+
       - name: Get TrinityCore Latest Release Tag
         id: tc-latest-release
         run: echo "::set-output name=tc-tag::$(./action tc-latest-release)"
