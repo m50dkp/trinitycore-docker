@@ -32,4 +32,4 @@ RUN npm install -g wait-port
 # Reasonable defaults
 ENV PATH="/hostfs/bin:$PATH"
 WORKDIR /hostfs
-ENTRYPOINT [ "/hostfs/bin/bash-entrypoint" ]
+ENTRYPOINT [ "/hostfs/bin/_bash-entrypoint" ]

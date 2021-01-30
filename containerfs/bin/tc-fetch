@@ -3,8 +3,6 @@
 set -euo pipefail
 set -x
 
-
-
 # Get latest release, aiming for stability, rather than using a random commit on
 # the 3.3.5 branch. TrinityCore mixes 335 and 837 releases, so we cannot just
 # grab the first or latest entry. Using jq, grab all the tags with "TDB335" and

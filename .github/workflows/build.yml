@@ -1,0 +1,63 @@
+name: Build & Smoke Test TrinityCore-Docker
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+
+jobs:
+  build-smoke-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Login to Docker Hub for private images
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Use node.js 14
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+
+      - name: Build root action container
+        run: ./action pwd
+
+      - name: Get TrinityCore source
+        run: ./action tc-fetch
+
+      # GHA's cache action does not run as sudo, but we're writing files inside
+      # of docker, running as root, directly to the host. The cache tries to
+      # extract the files, but then cannot write to directories owned by root.
+      # chmod/chown fixes the issue, allowing the files to extract successfully.
+      - name: Github Actions Cache Permissions Fix (pre cache download)
+        run: |
+          sudo chmod -R a+rwx .
+          sudo chown -R $(whoami):$(id -ng) .
+
+      - name: Cache / Retrieve TrinityCore Bins
+        uses: actions/cache@v2
+        id: trinitycore-bin-cache
+        env:
+          cache-name: trinitycore-build-cache
+        with:
+          path: ./containerfs/tc-server/dist
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./containerfs/tc-server/source/.git/HEAD') }}
+
+      - name: Build TrinityCore
+        if: steps.trinitycore-bin-cache.outputs.cache-hit != 'true'
+        run: ./action tc-build
+
+      - name: Get DB
+        run: ./action tc-db-fetch
+
+      - name: Prepare maps
+        run: ./ci/copy-maps-from-image
+
+      - name: Boot services and assert they all load
+        run: docker-compose -f ./docker-compose.yaml -f ./ci/docker-compose.ci.yaml up --exit-code-from trinitycore-ready

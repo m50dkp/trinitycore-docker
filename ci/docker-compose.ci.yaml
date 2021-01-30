@@ -1,0 +1,13 @@
+version: "3.7"
+
+services:
+  
+  trinitycore-ready:
+    image: tc-builder
+    command: >
+      /bin/sh -c "
+        wait-port --wait-for-dns trinitycore-db:3306 &&
+        wait-port --wait-for-dns trinitycore-worldserver:8085 &&
+        wait-port --wait-for-dns trinitycore-authserver:3724"
+    volumes:
+      - ./containerfs:/hostfs:delegated

@@ -1,0 +1,8 @@
+# ignore everything
+**
+
+# only include the wd (extracted maps)
+!/containerfs/tc-wd/dbc
+!/containerfs/tc-wd/maps
+!/containerfs/tc-wd/mmaps
+!/containerfs/tc-wd/vmaps
